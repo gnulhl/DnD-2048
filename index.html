@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>龙与地下城 2048：典藏像素版</title>
+    <style>
+        :root {
+            --bg-color: #0c0b0e;
+            --panel-bg: #1a171c;
+            --text-main: #e6e1d8;
+            --text-muted: #8c8279;
+            --gold: #dfb15b;
+            --grid-bg: #1c181a;
+            --cell-bg: #110e0f;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        
+        body {
+            background-color: var(--bg-color);
+            background-image: linear-gradient(135deg, #161218 0%, #060507 100%);
+            color: var(--text-main);
+            font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh; overflow-x: hidden; padding: 20px 10px;
+        }
+
+        header {
+            width: 100%; max-width: 500px; display: flex;
+            justify-content: space-between; align-items: center; margin-bottom: 20px;
+        }
+
+        .title-area h1 {
+            color: var(--gold); font-size: 26px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8); letter-spacing: 1px;
+        }
+        .title-area p { font-size: 13px; color: var(--text-muted); }
+
+        .stats-area { display: flex; gap: 10px; }
+        .stat-box {
+            background: linear-gradient(180deg, #2a2228 0%, #171316 100%);
+            border: 1px solid #483a42; padding: 5px 15px; border-radius: 6px;
+            text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.6);
+        }
+        .stat-box span { display: block; font-size: 10px; color: var(--gold); text-transform: uppercase; }
+        .stat-box strong { font-size: 18px; color: #fff; }
+
+        .controls {
+            width: 100%; max-width: 500px; display: flex;
+            justify-content: space-between; margin-bottom: 15px; gap: 10px;
+        }
+        .btn {
+            flex: 1; background: linear-gradient(180deg, #382c33 0%, #1e171b 100%);
+            color: var(--gold); border: 1px solid var(--gold); padding: 10px 0;
+            border-radius: 4px; cursor: pointer; font-family: inherit; font-weight: bold;
+            transition: all 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.5); font-size: 15px;
+        }
+        .btn:hover { background: var(--gold); color: #111; }
+        .btn:active { transform: translateY(2px); box-shadow: none; }
+
+        /* Game Board */
+        .game-wrapper {
+            position: relative; width: 100%; max-width: 500px;
+        }
+        .game-container {
+            position: relative; width: 100%; aspect-ratio: 1 / 1;
+            background: var(--grid-bg); border-radius: 8px;
+            border: 3px solid #362a30; padding: 2%;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.9), 0 10px 30px rgba(0,0,0,0.8);
+        }
+        .grid-background {
+            display: grid; grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(5, 1fr); gap: 2%; width: 100%; height: 100%;
+        }
+        .grid-cell { background: var(--cell-bg); border-radius: 4px; box-shadow: inset 0 0 8px rgba(0,0,0,0.8); }
+
+        .tile-container {
+            position: absolute; top: 2%; left: 2%; right: 2%; bottom: 2%; pointer-events: none;
+        }
+        .tile {
+            position: absolute; width: 18.4%; height: 18.4%;
+            transition: transform 0.12s ease-in-out; z-index: 10;
+        }
+        .tile-inner {
+            width: 100%; height: 100%; border-radius: 6px;
+            display: flex; justify-content: center; align-items: center;
+            position: relative; animation: appear 0.2s forwards;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.6); overflow: hidden;
+            border: 2px solid #333; background-color: var(--panel-bg);
+        }
+        .tile.merged .tile-inner { animation: pop 0.2s forwards; }
+
+        @keyframes appear { 0% { opacity: 0; transform: scale(0.5); } 100% { opacity: 1; transform: scale(1); } }
+        @keyframes pop { 0% { transform: scale(0.8); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
+
+        .tile-val {
+            position: absolute; top: 2px; left: 4px; font-size: 12px;
+            font-weight: bold; color: rgba(255,255,255,0.85); text-shadow: 1px 1px 0 #000; z-index: 2;
+        }
+        /* Crucial pixel rendering and pop-out shadow */
+        .tile-img { width: 85%; height: 85%; image-rendering: pixelated; z-index: 1; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.85)); }
+
+        /* Tiers Styling */
+        .t-2 { border-color: #5d4037; background: linear-gradient(135deg, #3e2723, #151515); }
+        .t-4 { border-color: #8d6e63; background: linear-gradient(135deg, #4e342e, #151515); }
+        .t-8 { border-color: #558b2f; background: linear-gradient(135deg, #33691e, #111); }
+        .t-16 { border-color: #0288d1; background: linear-gradient(135deg, #01579b, #111); }
+        .t-32 { border-color: #6a1b9a; background: linear-gradient(135deg, #4a148c, #111); }
+        .t-64 { border-color: #e64a19; background: linear-gradient(135deg, #bf360c, #111); }
+        
+        .t-128, .t-256 { border-color: #8e24aa; background: linear-gradient(135deg, #311b92, #000); box-shadow: 0 0 10px rgba(142,36,170,0.5); }
+        .t-512, .t-1024 { border-color: #e53935; background: linear-gradient(135deg, #b71c1c, #000); box-shadow: 0 0 15px rgba(229,57,53,0.6); }
+        .t-2048, .t-4096 { border-color: #43a047; background: linear-gradient(135deg, #1b5e20, #000); box-shadow: 0 0 20px rgba(67,160,71,0.7); }
+        
+        .t-8192, .t-16384 { border-color: #ffb300; background: linear-gradient(135deg, #f57f17, #000); box-shadow: 0 0 25px rgba(255,179,0,0.8); }
+        .t-32768, .t-65536 { border-color: #d50000; background: linear-gradient(135deg, #880e4f, #000); box-shadow: 0 0 35px rgba(213,0,0,0.9); }
+        
+        .t-131072, .t-262144 { border-color: #e0e0e0; background: linear-gradient(135deg, #ffffff, #424242); box-shadow: 0 0 40px #fff; }
+        .t-524288, .t-1048576 { border-color: #ff00ff; background: linear-gradient(135deg, #4a148c, #000); box-shadow: 0 0 50px #ff00ff; animation: pulse 2s infinite; }
+        .t-2097152 { border-color: #ffd700; background: linear-gradient(135deg, #ffd700, #ff0000, #000); box-shadow: 0 0 70px #ffd700; animation: pulse-epic 1.5s infinite; }
+
+        @keyframes pulse { 0%, 100% { box-shadow: 0 0 20px #ff00ff; } 50% { box-shadow: 0 0 45px #ff00ff; } }
+        @keyframes pulse-epic { 0%, 100% { box-shadow: 0 0 30px #ffd700; transform: scale(1); } 50% { box-shadow: 0 0 80px #ff0000; transform: scale(1.03); } }
+
+        /* Bestiary Book */
+        .bestiary-section {
+            width: 100%; max-width: 600px; margin-top: 40px;
+            background: #1f1b1e; border: 2px solid #483a42; border-radius: 8px;
+            padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+        .bestiary-title { color: var(--gold); text-align: center; margin-bottom: 20px; font-size: 20px; border-bottom: 1px dashed #483a42; padding-bottom: 10px; }
+        
+        .bestiary-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px;
+        }
+        .book-entry {
+            background: #2a2228; border: 1px solid #483a42; border-radius: 6px;
+            padding: 10px; text-align: center; display: flex; flex-direction: column; align-items: center;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+        .book-entry.locked { filter: grayscale(100%) brightness(0.2); border-color: #111; }
+        .book-entry.locked .entry-img { filter: contrast(0) brightness(0); }
+        
+        .entry-img {
+            width: 64px; height: 64px; image-rendering: pixelated; margin-bottom: 8px;
+            background: #110e0f; border-radius: 4px; padding: 4px; border: 1px solid #000;
+        }
+        .entry-name { font-size: 14px; font-weight: bold; color: var(--gold); margin-bottom: 4px; }
+        .entry-desc { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+
+        /* Message Overlay */
+        .message-overlay {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(5,5,5,0.9); display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 100;
+            border-radius: 8px; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+        .message-overlay.active { opacity: 1; pointer-events: all; }
+        .message-overlay h2 { font-size: 36px; color: var(--gold); margin-bottom: 20px; text-shadow: 0 0 10px #ff0000; }
+
+        @media (max-width: 600px) {
+            .bestiary-grid { grid-template-columns: repeat(3, 1fr); }
+            .entry-img { width: 50px; height: 50px; }
+            .entry-desc { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="title-area">
+            <h1>DnD 2048</h1>
+            <p>拼合魔物，解封典籍</p>
+        </div>
+        <div class="stats-area">
+            <div class="stat-box"><span>Score</span><strong id="score">0</strong></div>
+            <div class="stat-box"><span>Best</span><strong id="best">0</strong></div>
+        </div>
+    </header>
+
+    <div class="controls">
+        <button class="btn" id="btn-restart">重新试炼</button>
+        <button class="btn" id="btn-undo">时光倒流</button>
+    </div>
+
+    <div class="game-wrapper">
+        <div class="game-container" id="game-container">
+            <div class="grid-background" id="grid-bg"></div>
+            <div class="tile-container" id="tile-container"></div>
+            <div class="message-overlay" id="message-overlay">
+                <h2 id="msg-text">Game Over</h2>
+                <button class="btn" id="btn-msg-action" style="max-width:200px;">继续挑战</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="bestiary-section">
+        <h2 class="bestiary-title">🗡️ 冒险者魔物指南</h2>
+        <div class="bestiary-grid" id="bestiary-grid"></div>
+    </div>
+
+<script>
+/**
+ * 完整扩展的调色板 (18色)
+ */
+const P = {
+    '.': 'transparent',
+    '0': '#111111', // 黑/深灰 - 轮廓/阴影
+    '1': '#ffffff', // 白 - 眼白/牙齿/高光
+    '2': '#9e9e9e', // 中灰
+    '3': '#e0e0e0', // 浅灰/银/白骨
+    '4': '#f44336', // 红 - 眼睛/血/火
+    '5': '#b71c1c', // 暗红
+    '6': '#ff9800', // 橙
+    '7': '#ffeb3b', // 黄/金
+    '8': '#4caf50', // 绿
+    '9': '#1b5e20', // 暗绿
+    'A': '#2196f3', // 蓝
+    'B': '#0d47a1', // 暗蓝
+    'C': '#9c27b0', // 紫
+    'D': '#4a148c', // 暗紫
+    'E': '#795548', // 棕
+    'F': '#3e2723', // 暗棕
+    'G': '#ffcc80', // 肤色
+    'H': '#00bcd4'  // 青/闪电/冰
+};
+
+// 重新设计的特征鲜明的非对称像素画 (16x16)
+const MONSTERS = {
+    2: { name: "洞穴鼠", desc: "潜伏在阴暗深处的啮齿动物，长长的粉色尾巴是它的特征。", pixels: [
+        "................", "................", "................", "................", "................",
+        ".......FF.......", "......EEEE......", ".....EEEEEF.....", "....G4EEEF......", "...GEEEEEE...FF.",
+        "..GEE.EE.EF.F..F", "...E...E...F....", "...0...0........", "................", "................", "................"
+    ]},
+    4: { name: "狗头人", desc: "类爬行动物的龙裔近亲，手持简陋的长矛，总是侧身防备着冒险者。", pixels: [
+        "................", "................", "................", "......55........", ".....5445.......",
+        "....54145..2....", ".....5555..2....", ".....5555..2....", "....G5555G.2....", "...0.5555.02....",
+        ".....5555..2....", ".....5..5..2....", "....55..55.2....", "....00..00.0....", "................", "................"
+    ]},
+    8: { name: "哥布林", desc: "狡猾的绿色生物，挥舞着生锈的匕首，尖锐的长耳朵极具辨识度。", pixels: [
+        "................", "................", ".......8........", "...8..888..8....", "...88.818.88....",
+        "....8888888.....", "......888.......", ".....G888G.2....", "....0.888.02....", "......888..2....",
+        "......8.8..2....", ".....88.88.0....", ".....00.00......", "................", "................", "................"
+    ]},
+    16: { name: "冰魔蝠", desc: "飞行在极寒位面的小魔鬼，由冰晶构成，散发着刺骨的青色寒气。", pixels: [
+        "................", "................", ".H........H.....", "..HH....HH......", "...H.HH.H.......",
+        "...H.A1.H.......", "..HA.AA.AH......", "...HAAAAH.......", ".....AA.........", "....AAAA........",
+        "...AA..AA.......", "..0A....A0......", "................", "................", "................", "................"
+    ]},
+    32: { name: "食尸鬼", desc: "受诅咒的不死生物，惨白的皮肤，佝偻着身子吐出令人作呕的红舌。", pixels: [
+        "................", "................", "......33........", ".....3333.......", "....3413........",
+        "....344333......", ".....333333.....", "....3333333.....", "...33...333.....", "..33......33....",
+        "..0.......033...", "...........0....", "................", "................", "................", "................"
+    ]},
+    64: { name: "食人魔", desc: "力大无穷的巨怪，体态臃肿，扛着粗糙巨大的树干大棒。", pixels: [
+        "................", "......GG........", ".....G0GG.......", ".....GGGG.......", "...GGGGGGGG.....",
+        "..G..GGGG..F....", ".0...GGGG..F....", ".....GGGG..F....", ".....EEEE..F....", ".....EEEEE.F....",
+        ".....GG.GG.F....", "....GG...GG0....", "....0.....0.....", "................", "................", "................"
+    ]},
+    128: { name: "移位兽", desc: "生有六足的凶猛掠食者，背部的触手能扭曲光线隐藏真身。", pixels: [
+        "...C........C...", "...C........C...", "...CC......CC...", "....C......C....", ".....00DD00.....",
+        "...0D0DDD0D0....", "...04DDDDDD0....", "...0DDDDDDDD0...", "....0DDDDDD0....", "....D.D.D.DD....",
+        "...0D.0.0.0D....", "...0......0.....", "................", "................", "................", "................"
+    ]},
+    256: { name: "燃焰之颅", desc: "燃烧着幽绿火焰的法师头骨，在黑暗中诡异地漂浮。", pixels: [
+        "................", "......88........", "....889988......", "...89933998.....", "...893030398....",
+        "...893343398....", "....89300398....", ".....893398.....", "......8888......", ".......88.......",
+        "................", "................", "................", "................", "................", "................"
+    ]},
+    512: { name: "火元素", desc: "狂暴的火元素具象化，升腾的烈焰凝聚出类人的手臂。", pixels: [
+        "................", ".......4........", "......464.......", ".....46764......", "....4677764.....",
+        "...467161764....", "...467777764....", "...467777764....", "...466777664....", "....4466644.....",
+        "....4.444.4.....", "...4.......4....", "................", "................", "................", "................"
+    ]},
+    1024: { name: "美杜莎", desc: "头发全由毒蛇构成的女妖，手持弓箭，双眼散发石化诅咒。", pixels: [
+        "................", "......88........", ".....8888.......", "....88G888......", "....8G8G88......",
+        "...88GGG88..E...", "...8.GGG.8..E...", ".....GGG....E...", ".....AAA....E...", "....A.A.A.E.E...",
+        "...A..A..AE.E...", "...0..A..A0.0...", ".....G.G........", ".....0.0........", "................", "................"
+    ]},
+    2048: { name: "夺心魔", desc: "章鱼头、紫皮肤的灵吸怪，披着深紫长袍，用精神异能吞噬理智。", pixels: [
+        "................", "......CC........", ".....CCCC.......", "....CC1CCC......", "....CCCCCC......",
+        ".....C.CC.......", "....C..C.C......", "....D..D..D.....", "...DDDDDDDD.....", "..DDD.DD.DDD....",
+        "..D.D.DD.D.D....", ".D..D.DD.D..D...", ".0..D.DD.D..0...", "....0.00.0......", "................", "................"
+    ]},
+    4096: { name: "多头蛇", desc: "砍掉一头长出两头的恐怖巨兽，数个头颅交织在一起。", pixels: [
+        "................", "....9....9......", "...949..949.....", "....9....9..9...", ".....9..9..949..",
+        "...9..999...9...", "..949..9....9...", "...9...99999....", ".......99999....", "......9999999...",
+        "......9999999...", "......99...99...", ".....99.....99..", ".....0.......0..", "................", "................"
+    ]},
+    8192: { name: "云巨人", desc: "身形巨大，皮肤如苍穹般蔚蓝，手持破城锤隐于云端。", pixels: [
+        "................", "......HA........", ".....HHHA.......", ".....H0HA.......", ".....HHHH.......",
+        "...1.AAAA.2.....", "..111AAAA222....", "..1A1AAAA2A2....", "...A.AAAA.A.....", ".....AAAA.......",
+        ".....A..A.......", "....AA..AA......", "....AA..AA......", "....00..00......", "................", "................"
+    ]},
+    16384: { name: "底栖魔鱼", desc: "比诸神更古老的深渊巨鱼，三只红眼垂直排列，触手黏稠。", pixels: [
+        "................", ".........BBB....", ".......BBBBBB...", ".....BBBBBBBBB..", "....B4BBBBBBBBB.",
+        "....B4BBBBBB...B", "....B4BBBBB.....", ".....BBBBB......", "..A...BB.BB.A...", ".AAA..B...B.AA..",
+        ".A.A.B.....BA.A.", ".A...0.....0..A.", ".0............0.", "................", "................", "................"
+    ]},
+    32768: { name: "青足龙蛇", desc: "穿梭雷电中的多足巨兽，宛如一条蓝色的闪电长廊。", pixels: [
+        "................", "......BB........", ".....B41B.......", "....BBBB........", "...HB.......HB..",
+        "..HBBBB...BBBH..", ".H.B..BB.BB.B.H.", "...0...BBB..0...", "......BBBBB.....", ".....BB...BB....",
+        "....BB.....BB...", "...BB.......BB..", "...0B.......B0..", "....0.......0...", "................", "................"
+    ]},
+    65536: { name: "吸血鬼", desc: "披着高领红披风的暗夜贵族，苍白的脸上露出嗜血獠牙。", pixels: [
+        "................", "......33........", ".....3413.......", "....443344......", "...44033044.....",
+        "...04000040.....", "...00000000.....", "...00000000.....", "...000..000.....", "...0.0..0.0.....",
+        "..0..0..0..0....", "..0..0..0..0....", "..0..0..0..0....", "..0..0..0..0....", "................", "................"
+    ]},
+    131072: { name: "眼魔", desc: "漂浮的肉球，长着巨大的中央主眼与无数能发射射线的眼柄。", pixels: [
+        "................", "...8.8..8.8.....", "..8...88...8....", "...8.EEEE.8.....", "..8EE1111EE8....",
+        "..EEE1441EEE....", ".EEEE1441EEEE...", ".EEEE1111EEEE...", ".EEEEEEEEEEEE...", "..EEEE00EEEE....",
+        "...EEEEEEEE.....", "....EEEEEE......", "................", "................", "................", "................"
+    ]},
+    262144: { name: "银龙", desc: "正义的远古巨龙，银光闪闪的鳞片，头部有向后梳理的角冠。", pixels: [
+        "................", "........33......", ".......3333.....", "......313333....", "...22..3333..22.",
+        "..2222.3333.2222", ".223222333322232", "2233322333322333", "22....233332....", "2......3333.....",
+        "........33......", ".......3..3.....", "......33..33....", "......0....0....", "................", "................"
+    ]},
+    524288: { name: "巫妖", desc: "皇冠加冕的不死法师，华丽的法袍内是闪烁幽光的骷髅。", pixels: [
+        "................", "......77........", ".....7337.......", "....73A3A7......", ".....3333.......",
+        "....C3333C......", "...CCCDDCCC.....", "...C.CDDC.C.....", "..C..CDDC..C....", "..0..CDDC..0....",
+        ".....CDDC.......", ".....C..C.......", "....CC..CC......", "....00..00......", "................", "................"
+    ]},
+    1048576: { name: "泰拉斯奎", desc: "吞噬万物的末日巨兽，拥有不可摧毁的厚重甲壳与巨口。", pixels: [
+        "................", ".......555......", "......55555.....", ".....5555555....", "....5F5F5F5F5...",
+        "...55F5F5F5F55..", "...5GGGGGGGG5...", "..5G1G1GGGGGG5..", "..5GGGGGGGGGG5..", "..55G0GG00G055..",
+        "...5G..GG..G5...", "...0....0...0...", "................", "................", "................", "................"
+    ]},
+    2097152: { name: "提亚马特", desc: "恶龙神后，深渊的绝对霸主，红蓝绿黑白五颗龙头咆哮终局。", pixels: [
+        "...3........A...", "..343..0...A4A..", "...3..040...A...", ".......0........", ".4...........8..",
+        "444..55555..848.", ".4..5555555..8..", "....5555555.....", "...555...555....", "..5555...5555...",
+        "..555.....555...", "..55.......55...", "..0.........0...", "................", "................", "................"
+    ]}
+};
+
+function generateSVG(val) {
+    let pixels = MONSTERS[val]?.pixels;
+    if(!pixels) return '';
+    let rects = '';
+    for(let y=0; y<16; y++) {
+        for(let x=0; x<16; x++) {
+            let char = pixels[y][x];
+            if(char && char !== '.') {
+                rects += `<rect x="${x}" y="${y}" width="1" height="1" fill="${P[char]}" />`;
+            }
+        }
+    }
+    return `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" class="tile-img">${rects}</svg>`;
+}
+
+// ---------------- 游戏引擎 ----------------
+const SIZE = 5;
+let board = [];
+let tilesMap = {};
+let score = 0;
+// 修改了缓存的 KEY，以清空旧版本的记录，保证展示最新图鉴
+let bestScore = localStorage.getItem('dnd2048Best_v3') || 0;
+let history = [];
+let unlocked = JSON.parse(localStorage.getItem('dnd2048Unlocked_v3')) || [2, 4];
+let nextTileId = 1;
+let isAnimating = false;
+
+const scoreEl = document.getElementById('score');
+const bestEl = document.getElementById('best');
+const tileContainer = document.getElementById('tile-container');
+const bestiaryGrid = document.getElementById('bestiary-grid');
+const overlay = document.getElementById('message-overlay');
+const msgText = document.getElementById('msg-text');
+const gameContainer = document.getElementById('game-container');
+
+function initGame() {
+    board = Array(SIZE).fill().map(() => Array(SIZE).fill(null));
+    score = 0;
+    history = [];
+    tilesMap = {};
+    tileContainer.innerHTML = '';
+    bestEl.innerText = bestScore;
+    updateScore(0);
+    isAnimating = false;
+    
+    const gridBg = document.getElementById('grid-bg');
+    if(gridBg.children.length === 0) {
+        for(let i=0; i<SIZE*SIZE; i++) {
+            let cell = document.createElement('div');
+            cell.className = 'grid-cell';
+            gridBg.appendChild(cell);
+        }
+    }
+
+    addRandomTile();
+    addRandomTile();
+    renderBestiary();
+}
+
+function updateScore(add) {
+    score += add;
+    scoreEl.innerText = score;
+    if (score > bestScore) {
+        bestScore = score;
+        bestEl.innerText = bestScore;
+        localStorage.setItem('dnd2048Best_v3', bestScore);
+    }
+}
+
+function getEmptyCells(currentBoard) {
+    let cells = [];
+    for (let y = 0; y < SIZE; y++) {
+        for (let x = 0; x < SIZE; x++) {
+            if (!currentBoard[y][x]) cells.push({x, y});
+        }
+    }
+    return cells;
+}
+
+function addRandomTile() {
+    let emptyCells = getEmptyCells(board);
+    if (emptyCells.length > 0) {
+        let pos = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+        let val = Math.random() < 0.9 ? 2 : 4;
+        let id = nextTileId++;
+        board[pos.y][pos.x] = { id, val };
+        createTileDOM(id, val, pos.x, pos.y);
+    }
+}
+
+function createTileDOM(id, val, x, y, isMerge = false) {
+    let el = document.createElement('div');
+    el.className = 'tile';
+    
+    let inner = document.createElement('div');
+    inner.className = `tile-inner t-${val}`;
+    inner.innerHTML = `<div class="tile-val">${val}</div>${generateSVG(val)}`;
+    
+    el.appendChild(inner);
+    el.style.transform = `translate(${x * 111}%, ${y * 111}%)`;
+    if(isMerge) el.classList.add('merged');
+    
+    tileContainer.appendChild(el);
+    tilesMap[id] = { el, x, y, val };
+}
+
+function removeTileDOM(id) {
+    let tile = tilesMap[id];
+    if (tile && tile.el.parentNode) {
+        tile.el.parentNode.removeChild(tile.el);
+        delete tilesMap[id];
+    }
+}
+
+function saveState() {
+    let bCopy = board.map(row => row.map(c => c ? { id: c.id, val: c.val } : null));
+    history.push({ board: bCopy, score: score });
+    if (history.length > 300) history.shift();
+}
+
+function undo() {
+    if (history.length > 0 && !isAnimating) {
+        let state = history.pop();
+        board = state.board.map(row => row.map(c => c ? { id: c.id, val: c.val } : null));
+        score = state.score;
+        scoreEl.innerText = score;
+        
+        tileContainer.innerHTML = '';
+        tilesMap = {};
+        for(let y=0; y<SIZE; y++) {
+            for(let x=0; x<SIZE; x++) {
+                if(board[y][x]) createTileDOM(board[y][x].id, board[y][x].val, x, y);
+            }
+        }
+    }
+}
+
+function move(direction) {
+    if (isAnimating || overlay.classList.contains('active')) return;
+    
+    let vector = { 'up': {x:0,y:-1}, 'down': {x:0,y:1}, 'left': {x:-1,y:0}, 'right': {x:1,y:0} }[direction];
+    let traX = Array.from({length: SIZE}, (_,i)=>i);
+    let traY = Array.from({length: SIZE}, (_,i)=>i);
+    if (vector.x === 1) traX.reverse();
+    if (vector.y === 1) traY.reverse();
+
+    let newBoard = board.map(row => row.map(c => c ? { id: c.id, val: c.val } : null));
+    let mergedMap = Array(SIZE).fill().map(()=>Array(SIZE).fill(false));
+    
+    let moved = false;
+    let scoreAdd = 0;
+    let moves = [];
+    let creates = [];
+
+    for (let y of traY) {
+        for (let x of traX) {
+            let cell = newBoard[y][x];
+            if (cell) {
+                let currX = x, currY = y;
+                let nextX = x + vector.x, nextY = y + vector.y;
+
+                while (nextX>=0 && nextX<SIZE && nextY>=0 && nextY<SIZE && newBoard[nextY][nextX] === null) {
+                    currX = nextX; currY = nextY;
+                    nextX += vector.x; nextY += vector.y;
+                }
+
+                if (nextX>=0 && nextX<SIZE && nextY>=0 && nextY<SIZE && 
+                    newBoard[nextY][nextX] !== null && 
+                    newBoard[nextY][nextX].val === cell.val && 
+                    !mergedMap[nextY][nextX]) {
+                    
+                    let target = newBoard[nextY][nextX];
+                    newBoard[y][x] = null;
+                    
+                    let newVal = target.val * 2;
+                    let newId = nextTileId++;
+                    
+                    newBoard[nextY][nextX] = { id: newId, val: newVal };
+                    mergedMap[nextY][nextX] = true;
+                    scoreAdd += newVal;
+                    moved = true;
+                    checkUnlock(newVal);
+
+                    moves.push({ id: cell.id, toX: nextX, toY: nextY, destroy: true });
+                    moves.push({ id: target.id, toX: nextX, toY: nextY, destroy: true });
+                    creates.push({ id: newId, val: newVal, x: nextX, y: nextY });
+                } 
+                else if (currX !== x || currY !== y) {
+                    newBoard[currY][currX] = cell;
+                    newBoard[y][x] = null;
+                    moved = true;
+                    moves.push({ id: cell.id, toX: currX, toY: currY, destroy: false });
+                }
+            }
+        }
+    }
+
+    if (moved) {
+        isAnimating = true;
+        saveState();
+        board = newBoard;
+        updateScore(scoreAdd);
+
+        moves.forEach(m => {
+            let t = tilesMap[m.id];
+            if (t) {
+                t.x = m.toX; t.y = m.toY;
+                t.el.style.transform = `translate(${t.x * 111}%, ${t.y * 111}%)`;
+                if (m.destroy) t.el.style.zIndex = "5";
+            }
+        });
+
+        setTimeout(() => {
+            moves.filter(m => m.destroy).forEach(m => removeTileDOM(m.id));
+            creates.forEach(c => createTileDOM(c.id, c.val, c.x, c.y, true));
+            
+            addRandomTile();
+            if (checkGameOver()) showMsg('试炼结束', '图鉴收集已达极限');
+            isAnimating = false;
+        }, 120);
+    }
+}
+
+function checkGameOver() {
+    for (let y = 0; y < SIZE; y++) {
+        for (let x = 0; x < SIZE; x++) {
+            if (board[y][x] === null) return false;
+            if (x < SIZE - 1 && board[y][x+1] && board[y][x].val === board[y][x+1].val) return false;
+            if (y < SIZE - 1 && board[y+1][x] && board[y][x].val === board[y+1][x].val) return false;
+        }
+    }
+    return true;
+}
+
+function checkUnlock(val) {
+    if (!unlocked.includes(val) && MONSTERS[val]) {
+        unlocked.push(val);
+        localStorage.setItem('dnd2048Unlocked_v3', JSON.stringify(unlocked));
+        renderBestiary();
+    }
+}
+
+function showMsg(title) {
+    msgText.innerText = title;
+    overlay.classList.add('active');
+}
+
+function renderBestiary() {
+    bestiaryGrid.innerHTML = '';
+    const sortedKeys = Object.keys(MONSTERS).map(Number).sort((a,b)=>a-b);
+    
+    sortedKeys.forEach(val => {
+        let isUnlocked = unlocked.includes(val);
+        let data = MONSTERS[val];
+        let entry = document.createElement('div');
+        entry.className = `book-entry ${isUnlocked ? '' : 'locked'}`;
+        
+        entry.innerHTML = `
+            <div class="entry-img">${generateSVG(val)}</div>
+            <div class="entry-name">${isUnlocked ? data.name : '???'}</div>
+            <div class="entry-desc">${isUnlocked ? data.desc : '翻开更深层的地牢以发现它...'}</div>
+            <div style="font-size:10px; color:#666; margin-top:auto; padding-top:5px;">LV. ${val}</div>
+        `;
+        bestiaryGrid.appendChild(entry);
+    });
+}
+
+document.addEventListener('keydown', e => {
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+        e.preventDefault();
+        move(e.key.replace('Arrow', '').toLowerCase());
+    }
+});
+
+let touchStartX = 0, touchStartY = 0;
+
+gameContainer.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+}, {passive: true});
+
+gameContainer.addEventListener('touchmove', e => { e.preventDefault(); }, {passive: false});
+
+gameContainer.addEventListener('touchend', e => {
+    let dx = e.changedTouches[0].clientX - touchStartX;
+    let dy = e.changedTouches[0].clientY - touchStartY;
+    
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 30) {
+        move(dx > 0 ? 'right' : 'left');
+    } else if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 30) {
+        move(dy > 0 ? 'down' : 'up');
+    }
+});
+
+document.getElementById('btn-restart').addEventListener('click', () => { overlay.classList.remove('active'); initGame(); });
+document.getElementById('btn-undo').addEventListener('click', undo);
+document.getElementById('btn-msg-action').addEventListener('click', () => { overlay.classList.remove('active'); initGame(); });
+
+initGame();
+</script>
+</body>
+</html>
