@@ -355,7 +355,6 @@ const SIZE = 5;
 let board = [];
 let tilesMap = {};
 let score = 0;
-// 修改了缓存的 KEY，以清空旧版本的记录，保证展示最新图鉴
 let bestScore = localStorage.getItem('dnd2048Best_v3') || 0;
 let history = [];
 let unlocked = JSON.parse(localStorage.getItem('dnd2048Unlocked_v3')) || [2, 4];
@@ -370,16 +369,46 @@ const overlay = document.getElementById('message-overlay');
 const msgText = document.getElementById('msg-text');
 const gameContainer = document.getElementById('game-container');
 
-function initGame() {
-    board = Array(SIZE).fill().map(() => Array(SIZE).fill(null));
-    score = 0;
-    history = [];
+// 持久化保存当前游戏状态到 LocalStorage
+function saveGameData() {
+    const gameState = {
+        board: board,
+        score: score,
+        history: history,
+        nextTileId: nextTileId
+    };
+    localStorage.setItem('dnd2048GameState_v3', JSON.stringify(gameState));
+}
+
+// 游戏初始化 (forceRestart: 是否强制清空存档重开)
+function initGame(forceRestart = false) {
+    let savedState = null;
+    
+    if (!forceRestart) {
+        try {
+            savedState = JSON.parse(localStorage.getItem('dnd2048GameState_v3'));
+        } catch(e) { console.error("读取存档失败", e); }
+    }
+
+    if (savedState && savedState.board) {
+        board = savedState.board;
+        score = savedState.score || 0;
+        history = savedState.history || [];
+        nextTileId = savedState.nextTileId || 1;
+    } else {
+        board = Array(SIZE).fill().map(() => Array(SIZE).fill(null));
+        score = 0;
+        history = [];
+        nextTileId = 1;
+    }
+
     tilesMap = {};
     tileContainer.innerHTML = '';
     bestEl.innerText = bestScore;
-    updateScore(0);
+    scoreEl.innerText = score;
     isAnimating = false;
     
+    // 初始化网格背景
     const gridBg = document.getElementById('grid-bg');
     if(gridBg.children.length === 0) {
         for(let i=0; i<SIZE*SIZE; i++) {
@@ -389,8 +418,21 @@ function initGame() {
         }
     }
 
-    addRandomTile();
-    addRandomTile();
+    // 恢复存档的图块或随机生成初始图块
+    if (savedState && savedState.board) {
+        for(let y=0; y<SIZE; y++) {
+            for(let x=0; x<SIZE; x++) {
+                if(board[y][x]) {
+                    createTileDOM(board[y][x].id, board[y][x].val, x, y);
+                }
+            }
+        }
+    } else {
+        addRandomTile();
+        addRandomTile();
+        saveGameData(); // 初始生成后保存
+    }
+
     renderBestiary();
 }
 
@@ -451,8 +493,8 @@ function removeTileDOM(id) {
 
 function saveState() {
     let bCopy = board.map(row => row.map(c => c ? { id: c.id, val: c.val } : null));
-    history.push({ board: bCopy, score: score });
-    if (history.length > 300) history.shift();
+    history.push({ board: bCopy, score: score, nextTileId: nextTileId });
+    if (history.length > 50) history.shift(); // 限制历史记录数量以防存档过大
 }
 
 function undo() {
@@ -460,6 +502,7 @@ function undo() {
         let state = history.pop();
         board = state.board.map(row => row.map(c => c ? { id: c.id, val: c.val } : null));
         score = state.score;
+        nextTileId = state.nextTileId || nextTileId;
         scoreEl.innerText = score;
         
         tileContainer.innerHTML = '';
@@ -469,6 +512,8 @@ function undo() {
                 if(board[y][x]) createTileDOM(board[y][x].id, board[y][x].val, x, y);
             }
         }
+        
+        saveGameData(); // 撤销后保存最新状态
     }
 }
 
@@ -552,6 +597,8 @@ function move(direction) {
             creates.forEach(c => createTileDOM(c.id, c.val, c.x, c.y, true));
             
             addRandomTile();
+            saveGameData(); // 移动完成并且新方块生成后自动存档
+            
             if (checkGameOver()) showMsg('试炼结束', '图鉴收集已达极限');
             isAnimating = false;
         }, 120);
@@ -602,10 +649,25 @@ function renderBestiary() {
     });
 }
 
+// 键盘事件监听 (支持方向键与 WASD)
 document.addEventListener('keydown', e => {
-    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+    const key = e.key;
+    
+    // 方向键支持
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) {
         e.preventDefault();
-        move(e.key.replace('Arrow', '').toLowerCase());
+        move(key.replace('Arrow', '').toLowerCase());
+    } 
+    // WASD 支持 (兼容大小写)
+    else if (['w', 'a', 's', 'd', 'W', 'A', 'S', 'D'].includes(key)) {
+        e.preventDefault();
+        const wasdMap = {
+            'w': 'up', 'W': 'up',
+            's': 'down', 'S': 'down',
+            'a': 'left', 'A': 'left',
+            'd': 'right', 'D': 'right'
+        };
+        move(wasdMap[key]);
     }
 });
 
@@ -629,10 +691,23 @@ gameContainer.addEventListener('touchend', e => {
     }
 });
 
-document.getElementById('btn-restart').addEventListener('click', () => { overlay.classList.remove('active'); initGame(); });
-document.getElementById('btn-undo').addEventListener('click', undo);
-document.getElementById('btn-msg-action').addEventListener('click', () => { overlay.classList.remove('active'); initGame(); });
+// 重开游戏按钮：清除当前存档，强制重新初始化
+document.getElementById('btn-restart').addEventListener('click', () => { 
+    overlay.classList.remove('active'); 
+    localStorage.removeItem('dnd2048GameState_v3');
+    initGame(true); 
+});
 
+document.getElementById('btn-undo').addEventListener('click', undo);
+
+// 游戏结束界面重开：清除当前存档，强制重新初始化
+document.getElementById('btn-msg-action').addEventListener('click', () => { 
+    overlay.classList.remove('active'); 
+    localStorage.removeItem('dnd2048GameState_v3');
+    initGame(true); 
+});
+
+// 默认不传参数调用，如果有存档就直接读取
 initGame();
 </script>
 </body>
