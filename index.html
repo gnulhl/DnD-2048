@@ -132,15 +132,13 @@
         }
         .tile.crit .tile-inner { animation: crit-pop 0.6s forwards !important; border-color: var(--gold-bright) !important; }
 
-        /* 洗牌特效 */
-        .tile.shuffle-anim .tile-inner { animation: shuffle-vfx 0.5s ease-in-out forwards !important; }
+        .tile.shuffle-anim .tile-inner { animation: shuffle-vfx 0.4s ease-in-out forwards !important; }
         @keyframes shuffle-vfx {
             0% { transform: scale(1) rotate(0deg); opacity: 1; }
-            50% { transform: scale(0.5) rotate(180deg); opacity: 0.5; filter: blur(2px); }
+            50% { transform: scale(0.6) rotate(180deg); opacity: 0.7; filter: blur(1px); }
             100% { transform: scale(1) rotate(360deg); opacity: 1; }
         }
 
-        /* 交换特效 */
         .tile.swap-anim .tile-inner { animation: swap-vfx 0.5s ease-in-out forwards !important; border-color: #00bcd4 !important; }
         @keyframes swap-vfx {
             0% { box-shadow: 0 0 0 #00bcd4; }
@@ -148,7 +146,6 @@
             100% { box-shadow: 0 0 0 #00bcd4; }
         }
 
-        /* 吸血鬼升级特效 */
         .tile.vampire-up .tile-inner { animation: vamp-up-vfx 0.6s forwards !important; border-color: #b71c1c !important; }
         @keyframes vamp-up-vfx {
             0% { box-shadow: 0 0 0 #b71c1c; }
@@ -156,7 +153,6 @@
             100% { box-shadow: 0 0 10px #b71c1c; }
         }
 
-        /* 火元素被动特效 */
         .tile.fire-upgrade .tile-inner { animation: fire-up 0.6s forwards !important; border-color: #ff9800 !important; }
         @keyframes fire-up {
             0% { transform: scale(0.8); box-shadow: 0 0 0px #ff9800; }
@@ -165,14 +161,14 @@
         }
 
         .floating-text {
-            position: absolute; color: var(--gold-bright); font-weight: bold; font-size: 16px;
+            position: absolute; font-weight: bold; font-size: 18px;
             pointer-events: none; z-index: 200; animation: float-up 1s forwards;
-            text-shadow: 0 2px 4px #000; left: 50%; top: 50%; transform: translate(-50%, -50%);
+            text-shadow: 0 2px 4px #000; transform: translate(-50%, -50%);
             white-space: nowrap;
         }
         @keyframes float-up {
             0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -150%) scale(1.5); }
+            100% { opacity: 0; transform: translate(-50%, -200%) scale(1.5); }
         }
 
         /* Targeting Mode */
@@ -331,45 +327,45 @@ const MONSTERS = {
     2: { name: "洞穴鼠", pixels: [ "................", "................", "................", "................", "................", ".......FF.......", "......EEEE......", ".....EEEEEF.....", "....G4EEEF......", "...GEEEEEE...FF.", "..GEE.EE.EF.F..F", "...E...E...F....", "...0...0........", "................", "................", "................" ],
         ability: { name: '生存本能', type: 'passive', cd: 0, desc: '大幅提高洞穴鼠出现的概率' } },
     4: { name: "狗头人", pixels: [ "................", "................", "................", "......55........", ".....5445.......", "....54145..2....", ".....5555..2....", ".....5555..2....", "....G5555G.2....", "...0.5555.02....", ".....5555..2....", ".....5..5..2....", "....55..55.2....", "....00..00.0....", "................", "................" ],
-        ability: { name: '伏击', type: 'active', cd: 30, desc: '摧毁场上指定狗头人附近的一个随机魔物，并在该位置生成一个狗头人' } },
+        ability: { name: '伏击', type: 'active', cd: 40, desc: '摧毁一个魔物，前提是其附近存在狗头人。根据附近狗头人数量升级附近的狗头人。' } },
     8: { name: "哥布林", pixels: [ "................", "................", ".......8........", "...8..888..8....", "...88.818.88....", "....8888888.....", "......888.......", ".....G888G.2....", "....0.888.02....", "......888..2....", "......8.8..2....", ".....88.88.0....", ".....00.00......", "................", "................", "................" ],
         ability: { name: '剔除弱者', type: 'active', cd: 40, desc: '摧毁场上指定哥布林邻近的所有洞穴鼠或狗头人' } },
     16: { name: "冰魔蝠", pixels: [ "................", "................", ".H........H.....", "..HH....HH......", "...H.HH.H.......", "...H.A1.H.......", "..HA.AA.AH......", "...HAAAAH.......", ".....AA.........", "....AAAA........", "...AA..AA.......", "..0A....A0......", "................", "................", "................", "................" ],
-        ability: { name: '寒气凝结', type: 'active', cd: 30, desc: '冻结一个指定魔物5回合' } },
+        ability: { name: '寒气凝结', type: 'active', cd: 20, desc: '场上有冰魔蝠时，可以冻结一个指定魔物 5 回合' } },
     32: { name: "食尸鬼", pixels: [ "................", "................", "......33........", ".....3333.......", "....3413........", "....344333......", ".....333333.....", "....3333333.....", "...33...333.....", "..33......33....", "..0.......033...", "...........0....", "................", "................", "................", "................" ],
         ability: { name: '同类相食', type: 'active', cd: 60, desc: '场上指定的一个食尸鬼吞噬其周边的所有魔物，然后自身升级为食人魔' } },
     64: { name: "食人魔", pixels: [ "................", "......GG........", ".....G0GG.......", ".....GGGG.......", "...GGGGGGGG.....", "..G..GGGG..F....", ".0...GGGG..F....", ".....GGGG..F....", ".....EEEE..F....", ".....EEEEE.F....", ".....GG.GG.F....", "....GG...GG0....", "....0.....0.....", "................", "................", "................" ],
-        ability: { name: '贪婪', type: 'passive', cd: 0, desc: '当局结束时获得额外10%的金币' } },
+        ability: { name: '贪婪', type: 'passive', cd: 0, desc: '当局结束获得额外10%金币。每合成四个食人魔获得1金币。' } },
     128: { name: "移位兽", pixels: [ "...C........C...", "...C........C...", "...CC......CC...", "....C......C....", ".....00DD00.....", "...0D0DDD0D0....", "...04DDDDDD0....", "...0DDDDDDDD0...", "....0DDDDDD0....", "....D.D.D.DD....", "...0D.0.0.0D....", "...0......0.....", "................", "................", "................", "................" ],
-        ability: { name: '幻象移位', type: 'active', cd: 10, desc: '随机交换场上两个魔物的位置' } },
+        ability: { name: '幻象移位', type: 'active', cd: 5, desc: '交换场上移位兽附近指定两个魔物的位置' } },
     256: { name: "燃焰之颅", pixels: [ "................", "......88........", "....889988......", "...89933998.....", "...893030398....", "...893343398....", "....89300398....", ".....893398.....", "......8888......", ".......88.......", "................", "................", "................", "................", "................", "................" ],
-        ability: { name: '火球术', type: 'active', cd: 90, desc: '随机摧毁5个 128 级及以下的魔物' } },
+        ability: { name: '火球术', type: 'active', cd: 90, desc: '场上有燃焰之颅时，随机摧毁 5 个 128 级及以下的魔物' } },
     512: { name: "火元素", pixels: [ "................", ".......4........", "......464.......", ".....46764......", "....4677764.....", "...467161764....", "...467777764....", "...467777764....", "...466777664....", "....4466644.....", "....4.444.4.....", "...4.......4....", "................", "................", "................", "................" ],
         ability: { name: '元素火种', type: 'passive', cd: 0, desc: '合成出的燃焰之颅直接升级为火元素' } },
     1024: { name: "美杜莎", pixels: [ "................", "......88........", ".....8888.......", "....88G888......", "....8G8G88......", "...88GGG88..E...", "...8.GGG.8..E...", ".....GGG....E...", ".....AAA....E...", "....A.A.A.E.E...", "...A..A..AE.E...", "...0..A..A0.0...", ".....G.G........", ".....0.0........", "................", "................" ],
-        ability: { name: '石化凝视', type: 'active', cd: 40, desc: '冻结场上指定的4个魔物3回合' } },
+        ability: { name: '石化凝视', type: 'active', cd: 20, desc: '场上有美杜莎时，冻结场上指定的 4 个魔物 4 回合' } },
     2048: { name: "夺心魔", pixels: [ "................", "......CC........", ".....CCCC.......", "....CC1CCC......", "....CCCCCC......", ".....C.CC.......", "....C..C.C......", "....D..D..D.....", "...DDDDDDDD.....", "..DDD.DD.DDD....", "..D.D.DD.D.D....", ".D..D.DD.D..D...", ".0..D.DD.D..0...", "....0.00.0......", "................", "................" ],
-        ability: { name: '异能激荡', type: 'passive', cd: 0, desc: '合成时有5%概率暴击，产物直升2级' } },
+        ability: { name: '异能激荡', type: 'passive', cd: 0, desc: '合成时有 5% 概率暴击，产物直升 2 级' } },
     4096: { name: "多头蛇", pixels: [ "................", "....9....9......", "...949..949.....", "....9....9..9...", ".....9..9..949..", "...9..999...9...", "..949..9....9...", "...9...99999....", ".......99999....", "......9999999...", "......9999999...", "......99...99...", ".....99.....99..", ".....0.......0..", "................", "................" ],
-        ability: { name: '多重乱斩', type: 'active', cd: 60, desc: '重新洗牌场上所有魔物的位置' } },
+        ability: { name: '多重乱斩', type: 'passive', cd: 0, desc: '每次移动，随机分配场上所有魔物的位置' } },
     8192: { name: "云巨人", pixels: [ "................", "......HA........", ".....HHHA.......", ".....H0HA.......", ".....HHHH.......", "...1.AAAA.2.....", "..111AAAA222....", "..1A1AAAA2A2....", "...A.AAAA.A.....", ".....AAAA.......", ".....A..A.......", "....AA..AA......", "....AA..AA......", "....00..00......", "................", "................" ],
-        ability: { name: '财富之握', type: 'passive', cd: 0, desc: '当局结束时获得额外25%的金币' } },
+        ability: { name: '财富之握', type: 'passive', cd: 0, desc: '当局结束获得额外25%金币。每合成一个云巨人获得20金币。' } },
     16384: { name: "底栖魔鱼", pixels: [ "................", ".........BBB....", ".......BBBBBB...", ".....BBBBBBBBB..", "....B4BBBBBBBBB.", "....B4BBBBBB...B", "....B4BBBBB.....", ".....BBBBB......", "..A...BB.BB.A...", ".AAA..B...B.AA..", ".A.A.B.....BA.A.", ".A...0.....0..A.", ".0............0.", "................", "................", "................" ],
         ability: { name: '远古低语', type: 'active', cd: 90, desc: '将一个不高于云巨人的指定魔物提升 1 级' } },
     32768: { name: "青足龙蛇", pixels: [ "................", "......BB........", ".....B41B.......", "....BBBB........", "...HB.......HB..", "..HBBBB...BBBH..", ".H.B..BB.BB.B.H.", "...0...BBB..0...", "......BBBBB.....", ".....BB...BB....", "....BB.....BB...", "...BB.......BB..", "...0B.......B0..", "....0.......0...", "................", "................" ],
         ability: { name: '雷霆降生', type: 'passive', cd: 0, desc: '生成的新魔物变为狗头人、哥布林或冰魔蝠' } },
     65536: { name: "吸血鬼", pixels: [ "................", "......33........", ".....3413.......", "....443344......", "...44033044.....", "...04000040.....", "...00000000.....", "...00000000.....", "...000..000.....", "...0.0..0.0.....", "..0..0..0..0....", "..0..0..0..0....", "..0..0..0..0....", "..0..0..0..0....", "................", "................" ],
-        ability: { name: '生命汲取', type: 'active', cd: 90, desc: '随机摧毁1个非最高级魔物，随机升级1个非最高级魔物' } },
+        ability: { name: '生命汲取', type: 'active', cd: 90, desc: '随机摧毁 1 个非最高级魔物，随机升级 1 个非最高级魔物' } },
     131072: { name: "眼魔", pixels: [ "................", "...8.8..8.8.....", "..8...88...8....", "...8.EEEE.8.....", "..8EE1111EE8....", "..EEE1441EEE....", ".EEEE1441EEEE...", ".EEEE1111EEEE...", ".EEEEEEEEEEEE...", "..EEEE00EEEE....", "...EEEEEEEE.....", "....EEEEEE......", "................", "................", "................", "................" ],
-        ability: { name: '解离射线', type: 'active', cd: 15, desc: '随机摧毁场上一个魔物' } },
+        ability: { name: '解离射线', type: 'passive', cd: 10, desc: '随机摧毁场上一个非最高级魔物。' } },
     262144: { name: "银龙", pixels: [ "................", "........33......", ".......3333.....", "......313333....", "...22..3333..22.", "..2222.3333.2222", ".223222333322232", "2233322333322333", "22....233332....", "2......3333.....", "........33......", ".......3..3.....", "......33..33....", "......0....0....", "................", "................" ],
-        ability: { name: '正义祝福', type: 'passive', cd: 0, desc: '合成时有10%概率暴击(直升2级)，并立即获得1金币' } },
+        ability: { name: '正义祝福', type: 'passive', cd: 0, desc: '合成时有 10% 概率暴击（直升 2 级），并立即获得 1 金币' } },
     524288: { name: "巫妖", pixels: [ "................", "......77........", ".....7337.......", "....73A3A7......", ".....3333.......", "....C3333C......", "...CCCDDCCC.....", "...C.CDDC.C.....", "..C..CDDC..C....", "..0..CDDC..0....", ".....CDDC.......", ".....C..C.......", "....CC..CC......", "....00..00......", "................", "................" ],
-        ability: { name: '命匣存储', type: 'passive', cd: 0, desc: '限一次：绝境时消灭非最高级魔物续命并重置金币价格。合成巫妖时重置次数。' } },
+        ability: { name: '命匣存储', type: 'passive', cd: 0, desc: '限一次：绝境时消灭非最高级魔物续命并重置金币价格。合成巫妖时重置次数' } },
     1048576: { name: "泰拉斯奎", pixels: [ "................", ".......555......", "......55555.....", ".....5555555....", "....5F5F5F5F5...", "...55F5F5F5F55..", "...5GGGGGGGG5...", "..5G1G1GGGGGG5..", "..5GGGGGGGGGG5..", "..55G0GG00G055..", "...5G..GG..G5...", "...0....0...0...", "................", "................", "................", "................" ],
-        ability: { name: '末日吞噬', type: 'active', cd: 100, desc: '摧毁场上所有比当前最高级魔物等级低的魔物' } },
+        ability: { name: '末日吞噬', type: 'active', cd: 100, desc: '摧毁所有比当前最高级魔物等级低的魔物，获得相当于摧毁数量三倍的金币' } },
     2097152: { name: "提亚马特", pixels: [ "...3........A...", "..343..0...A4A..", "...3..040...A...", ".......0........", ".4...........8..", "444..55555..848.", ".4..5555555..8..", "....5555555.....", "...555...555....", "..5555...5555...", "..555.....555...", "..55.......55...", "..0.........0...", "................", "................", "................" ],
-        ability: { name: '神圣干涉', type: 'passive', cd: 0, desc: '当场上有提亚马特时，填满提亚马特宣告终结胜利' } }
+        ability: { name: '神圣干涉', type: 'passive', cd: 0, desc: '当场上有提亚马特时，填满提亚马特，宣告终结胜利' } }
 };
 
 function generateSVG(val) {
@@ -390,23 +386,22 @@ const SIZE = 5;
 let board = [];
 let tilesMap = {};
 let score = 0;
-let bestScore = localStorage.getItem('dnd2048Best_v9') || 0;
-let totalGold = parseInt(localStorage.getItem('dnd2048Gold_v9')) || 0;
+let bestScore = localStorage.getItem('dnd2048Best_v10') || 0;
+let totalGold = parseInt(localStorage.getItem('dnd2048Gold_v10')) || 0;
 let history = []; 
-let unlocked = JSON.parse(localStorage.getItem('dnd2048Unlocked_v9')) || [2, 4]; // 正常模式解锁
+let unlocked = JSON.parse(localStorage.getItem('dnd2048Unlocked_v10')) || [2, 4]; 
 
 let nextTileId = 1;
 let isAnimating = false;
 
-// 瞄准系统重构
 let isTargetingMode = false;
 let targetingConfig = null; 
 
-// 能力状态
-let equippedAbilityId = localStorage.getItem('dnd2048Equipped_v9') || null; 
+let equippedAbilityId = localStorage.getItem('dnd2048Equipped_v10') || null; 
 let currentAbilityId = null;  
 let abilityCharge = 0;
 let lichUsed = false;
+let ogreMergeCount = 0;
 let goldCosts = { kill: 2, rewind: 2, swap: 2 };
 
 const scoreEl = document.getElementById('score');
@@ -424,15 +419,15 @@ function saveGameData() {
     const gameState = {
         board: board, score: score, nextTileId: nextTileId, history: history,
         currentAbilityId: currentAbilityId, abilityCharge: abilityCharge, 
-        lichUsed: lichUsed, goldCosts: goldCosts
+        lichUsed: lichUsed, goldCosts: goldCosts, ogreMergeCount: ogreMergeCount
     };
-    localStorage.setItem('dnd2048GameState_v9', JSON.stringify(gameState));
+    localStorage.setItem('dnd2048GameState_v10', JSON.stringify(gameState));
 }
 
 function initGame(forceRestart = false) {
     let savedState = null;
     if (!forceRestart) {
-        try { savedState = JSON.parse(localStorage.getItem('dnd2048GameState_v9')); } catch(e) {}
+        try { savedState = JSON.parse(localStorage.getItem('dnd2048GameState_v10')); } catch(e) {}
     }
 
     if (savedState && savedState.board) {
@@ -443,12 +438,13 @@ function initGame(forceRestart = false) {
         currentAbilityId = savedState.currentAbilityId || null;
         abilityCharge = savedState.abilityCharge || 0;
         lichUsed = savedState.lichUsed || false;
+        ogreMergeCount = savedState.ogreMergeCount || 0;
         goldCosts = savedState.goldCosts || { kill: 2, rewind: 2, swap: 2 };
     } else {
         board = Array(SIZE).fill().map(() => Array(SIZE).fill(null));
         score = 0; nextTileId = 1; history = [];
         currentAbilityId = equippedAbilityId;
-        abilityCharge = 0; lichUsed = false;
+        abilityCharge = 0; lichUsed = false; ogreMergeCount = 0;
         goldCosts = { kill: 2, rewind: 2, swap: 2 };
     }
 
@@ -482,7 +478,7 @@ function updateScore(add) {
     score += add; scoreEl.innerText = score;
     if (score > bestScore) {
         bestScore = score; bestEl.innerText = bestScore;
-        localStorage.setItem('dnd2048Best_v9', bestScore);
+        localStorage.setItem('dnd2048Best_v10', bestScore);
     }
 }
 
@@ -495,9 +491,18 @@ function getEmptyCells(currentBoard) {
 function checkUnlock(val) {
     if (!unlocked.includes(val) && MONSTERS[val]) {
         unlocked.push(val);
-        localStorage.setItem('dnd2048Unlocked_v9', JSON.stringify(unlocked));
+        localStorage.setItem('dnd2048Unlocked_v10', JSON.stringify(unlocked));
         renderBestiary();
     }
+}
+
+function hasAdjacent(x, y, val) {
+    let count = 0;
+    [[0,1],[0,-1],[1,0],[-1,0]].forEach(d => {
+        let ny = y+d[0], nx = x+d[1];
+        if(ny>=0 && ny<SIZE && nx>=0 && nx<SIZE && board[ny][nx] && board[ny][nx].val === val) count++;
+    });
+    return count;
 }
 
 function addRandomTile() {
@@ -516,8 +521,19 @@ function addRandomTile() {
     }
 }
 
+function showFloatingVFX(x, y, text, color = "var(--gold-bright)") {
+    let el = document.createElement('div');
+    el.className = 'floating-text';
+    el.innerText = text;
+    el.style.color = color;
+    el.style.left = `calc(${x * 20.4 + 9.2}%)`;
+    el.style.top = `calc(${y * 20.4 + 9.2}%)`;
+    tileContainer.appendChild(el);
+    setTimeout(() => { if(el.parentNode) el.parentNode.removeChild(el); }, 1000);
+}
+
 function createTileDOM(id, val, x, y, isMerge = false, isCrit = false, isFireUp = false, isVampUp = false) {
-    checkUnlock(val); // 检查是否解锁新魔物
+    checkUnlock(val); 
     
     let el = document.createElement('div'); el.className = 'tile';
     if(isCrit) el.classList.add('crit');
@@ -530,6 +546,12 @@ function createTileDOM(id, val, x, y, isMerge = false, isCrit = false, isFireUp 
     
     if (isCrit) {
         let ft = document.createElement('div'); ft.className = 'floating-text'; ft.innerText = 'CRIT!';
+        ft.style.left = "50%"; ft.style.top = "50%";
+        el.appendChild(ft);
+    }
+    if (isFireUp) {
+        let ft = document.createElement('div'); ft.className = 'floating-text'; ft.innerText = '🔥元素觉醒';
+        ft.style.left = "50%"; ft.style.top = "50%"; ft.style.color = "#ff9800";
         el.appendChild(ft);
     }
 
@@ -558,7 +580,7 @@ function removeTileDOM(id, playVfx = false) {
 
 function saveState() {
     let bCopy = board.map(row => row.map(c => c ? { ...c } : null)); 
-    history.push({ board: bCopy, score: score, nextTileId: nextTileId, abilityCharge: abilityCharge, lichUsed: lichUsed, goldCosts: {...goldCosts} });
+    history.push({ board: bCopy, score: score, nextTileId: nextTileId, abilityCharge: abilityCharge, lichUsed: lichUsed, goldCosts: {...goldCosts}, ogreMergeCount: ogreMergeCount });
     if (history.length > 50) history.shift();
 }
 
@@ -613,7 +635,7 @@ gameContainer.addEventListener('click', (e) => {
         let t = Object.values(tilesMap).find(m => m.el === targetEl);
         if (t) {
             let cell = board[t.y][t.x];
-            if (cell && targetingConfig.validFn(cell) && !targetingConfig.targets.some(m=>m.x===t.x&&m.y===t.y)) {
+            if (cell && targetingConfig.validFn(cell, t.x, t.y) && !targetingConfig.targets.some(m=>m.x===t.x&&m.y===t.y)) {
                 targetingConfig.targets.push({x: t.x, y: t.y, cell: cell});
                 t.el.style.opacity = 0.4;
                 updateTargetingBanner();
@@ -633,7 +655,7 @@ gameContainer.addEventListener('click', (e) => {
 // ---- 金币能力逻辑 ----
 function deductGold(amount) {
     totalGold -= amount;
-    localStorage.setItem('dnd2048Gold_v9', totalGold);
+    localStorage.setItem('dnd2048Gold_v10', totalGold);
     uiGold.innerText = totalGold;
 }
 
@@ -651,9 +673,7 @@ document.getElementById('btn-g-kill').addEventListener('click', () => {
         let id = board[tgt.y][tgt.x].id;
         board[tgt.y][tgt.x] = null;
         removeTileDOM(id, true);
-        playAbilityVFX();
-        updateAbilityUI();
-        saveState(); saveGameData();
+        playAbilityVFX(); updateAbilityUI(); saveState(); saveGameData();
     });
 });
 
@@ -663,7 +683,6 @@ document.getElementById('btn-g-rewind').addEventListener('click', () => {
     if (totalGold < cost || history.length === 0) return;
     
     deductGold(cost);
-    // 独立计算回退费用，不随回退而重置
     let nextCost = Math.min(100, goldCosts.rewind * 2);
     let keptGoldCosts = {...goldCosts};
     keptGoldCosts.rewind = nextCost;
@@ -675,6 +694,7 @@ document.getElementById('btn-g-rewind').addEventListener('click', () => {
     board = state.board.map(row => row.map(c => c ? { ...c } : null));
     score = state.score; nextTileId = state.nextTileId;
     abilityCharge = state.abilityCharge; lichUsed = state.lichUsed;
+    ogreMergeCount = state.ogreMergeCount || ogreMergeCount;
     goldCosts = keptGoldCosts; 
     
     scoreEl.innerText = score;
@@ -708,16 +728,12 @@ document.getElementById('btn-g-swap').addEventListener('click', () => {
         tile1.el.style.transform = `translate(${tile1.x * 111}%, ${tile1.y * 111}%)`;
         tile2.el.style.transform = `translate(${tile2.x * 111}%, ${tile2.y * 111}%)`;
         
-        tile1.el.classList.add('swap-anim');
-        tile2.el.classList.add('swap-anim');
-        tile1.el.style.zIndex = 50;
-        tile2.el.style.zIndex = 50;
+        tile1.el.classList.add('swap-anim'); tile2.el.classList.add('swap-anim');
+        tile1.el.style.zIndex = 50; tile2.el.style.zIndex = 50;
         
         setTimeout(() => {
-            tile1.el.classList.remove('swap-anim');
-            tile2.el.classList.remove('swap-anim');
-            tile1.el.style.zIndex = 10;
-            tile2.el.style.zIndex = 10;
+            tile1.el.classList.remove('swap-anim'); tile2.el.classList.remove('swap-anim');
+            tile1.el.style.zIndex = 10; tile2.el.style.zIndex = 10;
         }, 500);
         
         updateFreezeUI(); updateAbilityUI(); saveState(); saveGameData();
@@ -730,13 +746,13 @@ document.getElementById('btn-g-swap').addEventListener('click', () => {
 function abilityDestroyCond(condFunc, maxCount = 999, isVfx = true) {
     let cells = [];
     for(let y=0;y<SIZE;y++) for(let x=0;x<SIZE;x++) if(board[y][x] && condFunc(board[y][x].val)) cells.push({x,y, id: board[y][x].id});
-    if(cells.length === 0) return false;
+    if(cells.length === 0) return 0;
     cells.sort(() => Math.random() - 0.5);
     let count = 0;
     for(let i=0; i<Math.min(maxCount, cells.length); i++) {
         let p = cells[i]; board[p.y][p.x] = null; removeTileDOM(p.id, isVfx); count++;
     }
-    return count > 0;
+    return count;
 }
 
 function abilityUpgradeCondMultiple(condFunc, count) {
@@ -754,61 +770,29 @@ function abilityUpgradeCondMultiple(condFunc, count) {
     return upgraded > 0;
 }
 
-function abilitySwapTwo() {
-    let coords = [];
-    for(let y=0;y<SIZE;y++) for(let x=0;x<SIZE;x++) if(board[y][x]) coords.push({x,y});
-    if(coords.length < 2) return false;
-    let i1 = Math.floor(Math.random() * coords.length), i2 = Math.floor(Math.random() * coords.length);
-    while(i1 === i2) i2 = Math.floor(Math.random() * coords.length);
-    let p1 = coords[i1], p2 = coords[i2];
-    let t1 = board[p1.y][p1.x], t2 = board[p2.y][p2.x];
-    board[p1.y][p1.x] = t2; board[p2.y][p2.x] = t1;
-    
-    let tile1 = tilesMap[t1.id];
-    let tile2 = tilesMap[t2.id];
-    
-    tile1.x = p2.x; tile1.y = p2.y;
-    tile2.x = p1.x; tile2.y = p1.y;
-    
-    tile1.el.style.transform = `translate(${tile1.x * 111}%, ${tile1.y * 111}%)`;
-    tile2.el.style.transform = `translate(${tile2.x * 111}%, ${tile2.y * 111}%)`;
-    
-    tile1.el.classList.add('swap-anim');
-    tile2.el.classList.add('swap-anim');
-    tile1.el.style.zIndex = 50;
-    tile2.el.style.zIndex = 50;
-    
-    setTimeout(() => {
-        tile1.el.classList.remove('swap-anim');
-        tile2.el.classList.remove('swap-anim');
-        tile1.el.style.zIndex = 10;
-        tile2.el.style.zIndex = 10;
-    }, 500);
-    
-    updateFreezeUI();
-    return true;
-}
-
-function abilityShuffle() {
-    let tiles = [];
-    for(let y=0;y<SIZE;y++) for(let x=0;x<SIZE;x++) if(board[y][x]) { tiles.push(board[y][x]); board[y][x] = null; }
+function abilityShuffle(isPassive = false) {
+    let coords = []; let tiles = [];
+    for(let y=0;y<SIZE;y++)for(let x=0;x<SIZE;x++){
+        if(board[y][x]) { coords.push({x,y}); tiles.push(board[y][x]); }
+    }
     if(tiles.length === 0) return false;
+
     for (let i = tiles.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
     }
-    tileContainer.innerHTML = ''; tilesMap = {};
-    let idx = 0;
-    for(let y=0;y<SIZE;y++) for(let x=0;x<SIZE;x++) {
-        if (idx < tiles.length) {
-            let t = tiles[idx++]; board[y][x] = t; createTileDOM(t.id, t.val, x, y);
-            let newlyCreated = tilesMap[t.id];
-            if(newlyCreated) newlyCreated.el.classList.add('shuffle-anim');
-        }
+
+    for(let i=0; i<coords.length; i++) {
+        let p = coords[i]; let t = tiles[i]; board[p.y][p.x] = t;
+        let tileObj = tilesMap[t.id];
+        tileObj.x = p.x; tileObj.y = p.y;
+        tileObj.el.style.transform = `translate(${p.x * 111}%, ${p.y * 111}%)`;
+        if(!isPassive) tileObj.el.classList.add('shuffle-anim');
     }
-    setTimeout(() => {
-        document.querySelectorAll('.shuffle-anim').forEach(el => el.classList.remove('shuffle-anim'));
-    }, 500);
+
+    if(!isPassive) {
+        setTimeout(() => { document.querySelectorAll('.shuffle-anim').forEach(el => el.classList.remove('shuffle-anim')); }, 500);
+    }
     updateFreezeUI();
     return true;
 }
@@ -843,44 +827,47 @@ btnUseAbility.addEventListener('click', () => {
 
     // --- 瞄准类主动技能 ---
     if (currentAbilityId == 4) {
-        if (!board.flat().some(c => c && c.val === 4)) return; 
-        startTargeting("伏击：选择1个狗头人", c => c.val === 4, 1, tgts => {
-            let k = tgts[0]; let adjs = [];
+        let validCount = 0;
+        for(let y=0;y<SIZE;y++)for(let x=0;x<SIZE;x++){ if(board[y][x] && hasAdjacent(x,y,4)>0) validCount++; }
+        if (validCount === 0) return; 
+        startTargeting("伏击：选择狗头人附近的一个魔物", (c, x, y) => hasAdjacent(x, y, 4) > 0, 1, tgts => {
+            let tgt = tgts[0]; let kobolds = [];
             [[0,1],[0,-1],[1,0],[-1,0]].forEach(d => {
-                let ny = k.y+d[0], nx = k.x+d[1];
-                if(ny>=0 && ny<SIZE && nx>=0 && nx<SIZE && board[ny][nx]) adjs.push({x:nx, y:ny, id: board[ny][nx].id});
+                let ny = tgt.y+d[0], nx = tgt.x+d[1];
+                if(ny>=0 && ny<SIZE && nx>=0 && nx<SIZE && board[ny][nx] && board[ny][nx].val === 4) kobolds.push({x:nx, y:ny, id: board[ny][nx].id});
             });
-            if(adjs.length > 0) {
-                let adj = adjs[Math.floor(Math.random()*adjs.length)];
-                board[adj.y][adj.x] = null; removeTileDOM(adj.id, true);
-                let newId = nextTileId++; board[adj.y][adj.x] = {id: newId, val: 4, frozen: 0};
-                createTileDOM(newId, 4, adj.x, adj.y);
-                executeAbilityFinish();
-            }
+            let kCount = kobolds.length;
+            let targetTiers = {1: 8, 2: 16, 3: 32, 4: 128};
+            let upgradeVal = targetTiers[kCount] || 128;
+
+            board[tgt.y][tgt.x] = null; removeTileDOM(tgt.cell.id, true);
+            let newId1 = nextTileId++; board[tgt.y][tgt.x] = {id: newId1, val: 4, frozen: 0};
+            createTileDOM(newId1, 4, tgt.x, tgt.y);
+
+            kobolds.forEach(k => {
+                removeTileDOM(k.id, false);
+                let newId = nextTileId++; board[k.y][k.x] = {id: newId, val: upgradeVal, frozen: 0};
+                createTileDOM(newId, upgradeVal, k.x, k.y, false, false, true); 
+            });
+            executeAbilityFinish();
         }); return;
     }
     if (currentAbilityId == 8) {
         if (!board.flat().some(c => c && c.val === 8)) return;
-        startTargeting("剔除弱者：选择1个哥布林", c => c.val === 8, 1, tgts => {
+        startTargeting("剔除弱者：选择1个哥布林", (c) => c.val === 8, 1, tgts => {
             let k = tgts[0]; let adjs = [];
             [[0,1],[0,-1],[1,0],[-1,0]].forEach(d => {
                 let ny = k.y+d[0], nx = k.x+d[1];
                 if(ny>=0 && ny<SIZE && nx>=0 && nx<SIZE && board[ny][nx]) {
-                    if (board[ny][nx].val === 2 || board[ny][nx].val === 4) {
-                        adjs.push({x:nx, y:ny, id: board[ny][nx].id});
-                    }
+                    if (board[ny][nx].val === 2 || board[ny][nx].val === 4) adjs.push({x:nx, y:ny, id: board[ny][nx].id});
                 }
             });
-            if (adjs.length > 0) {
-                adjs.forEach(adj => {
-                    board[adj.y][adj.x] = null;
-                    removeTileDOM(adj.id, true);
-                });
-            }
+            if (adjs.length > 0) adjs.forEach(adj => { board[adj.y][adj.x] = null; removeTileDOM(adj.id, true); });
             executeAbilityFinish();
         }); return;
     }
     if (currentAbilityId == 16) {
+        if (!board.flat().some(c => c && c.val === 16)) return;
         if (!board.flat().some(c => c && c.frozen <= 0)) return;
         startTargeting("寒气凝结：选择1个魔物冻结", c => c.frozen <= 0, 1, tgts => {
             board[tgts[0].y][tgts[0].x].frozen = 5; updateFreezeUI(); executeAbilityFinish();
@@ -893,22 +880,42 @@ btnUseAbility.addEventListener('click', () => {
             [[0,1], [0,-1], [1,0], [-1,0]].forEach(d => {
                 let ny = g.y + d[0], nx = g.x + d[1];
                 if(ny>=0 && ny<SIZE && nx>=0 && nx<SIZE && board[ny][nx]) {
-                    removeTileDOM(board[ny][nx].id, true);
-                    board[ny][nx] = null;
+                    removeTileDOM(board[ny][nx].id, true); board[ny][nx] = null;
                 }
             });
             removeTileDOM(board[g.y][g.x].id, false);
-            let newId = nextTileId++;
-            board[g.y][g.x] = {id: newId, val: 64, frozen: 0};
-            createTileDOM(newId, 64, g.x, g.y);
-            executeAbilityFinish();
+            let newId = nextTileId++; board[g.y][g.x] = {id: newId, val: 64, frozen: 0};
+            createTileDOM(newId, 64, g.x, g.y); executeAbilityFinish();
+        }); return;
+    }
+    if (currentAbilityId == 128) {
+        let validCount = 0;
+        for(let y=0;y<SIZE;y++)for(let x=0;x<SIZE;x++){ if(board[y][x] && hasAdjacent(x,y,128)>0) validCount++; }
+        if (validCount < 2) return; 
+        startTargeting("幻象移位：指定移位兽附近的两个魔物", (c, x, y) => hasAdjacent(x, y, 128) > 0, 2, targets => {
+            let p1 = targets[0], p2 = targets[1];
+            let t1 = board[p1.y][p1.x], t2 = board[p2.y][p2.x];
+            board[p1.y][p1.x] = t2; board[p2.y][p2.x] = t1;
+            
+            let tile1 = tilesMap[t1.id], tile2 = tilesMap[t2.id];
+            tile1.x = p2.x; tile1.y = p2.y; tile2.x = p1.x; tile2.y = p1.y;
+            tile1.el.style.transform = `translate(${tile1.x * 111}%, ${tile1.y * 111}%)`;
+            tile2.el.style.transform = `translate(${tile2.x * 111}%, ${tile2.y * 111}%)`;
+            tile1.el.classList.add('swap-anim'); tile2.el.classList.add('swap-anim');
+            tile1.el.style.zIndex = 50; tile2.el.style.zIndex = 50;
+            setTimeout(() => {
+                tile1.el.classList.remove('swap-anim'); tile2.el.classList.remove('swap-anim');
+                tile1.el.style.zIndex = 10; tile2.el.style.zIndex = 10;
+            }, 500);
+            updateFreezeUI(); executeAbilityFinish();
         }); return;
     }
     if (currentAbilityId == 1024) {
+        if (!board.flat().some(c => c && c.val === 1024)) return;
         let count = board.flat().filter(c => c && c.frozen <= 0).length;
         if (count === 0) return;
         startTargeting("石化凝视：冻结", c => c.frozen <= 0, Math.min(4, count), tgts => {
-            tgts.forEach(t => board[t.y][t.x].frozen = 3); updateFreezeUI(); executeAbilityFinish();
+            tgts.forEach(t => board[t.y][t.x].frozen = 4); updateFreezeUI(); executeAbilityFinish();
         }); return;
     }
     if (currentAbilityId == 16384) {
@@ -923,22 +930,17 @@ btnUseAbility.addEventListener('click', () => {
 
     // --- 瞬发类主动技能 ---
     let success = false;
-    if (currentAbilityId == 64) success = abilityDestroyCond(v => v <= 16, 2, true);
-    else if (currentAbilityId == 128) success = abilitySwapTwo();
-    else if (currentAbilityId == 256) success = abilityDestroyCond(v => v <= 128, 5, true); 
-    else if (currentAbilityId == 4096) success = abilityShuffle();
-    else if (currentAbilityId == 8192) success = abilityUpgradeCondMultiple(v => v <= 2048, 3);
+    if (currentAbilityId == 256) {
+        if (board.flat().some(c => c && c.val === 256)) success = abilityDestroyCond(v => v <= 128, 5, true) > 0;
+    }
     else if (currentAbilityId == 65536) success = abilityVampire();
-    else if (currentAbilityId == 131072) success = abilityDestroyCond(v => true, 1, true);
     else if (currentAbilityId == 1048576) {
         let maxVal = Math.max(...board.flat().filter(c=>c).map(c=>c.val));
-        success = abilityDestroyCond(v => v < maxVal, 999, true);
+        let count = abilityDestroyCond(v => v < maxVal, 999, true);
+        if (count > 0) { deductGold(-(count * 3)); showFloatingVFX(2, 2, `+${count*3} G`); success = true; }
     }
 
-    if (success) {
-        let skipGlobal = [128, 4096, 65536].includes(currentAbilityId);
-        executeAbilityFinish(skipGlobal);
-    }
+    if (success) executeAbilityFinish(currentAbilityId == 65536);
 });
 
 function executeAbilityFinish(skipGlobalVFX = false) {
@@ -963,11 +965,15 @@ function updateAbilityUI() {
         icon.innerHTML = generateSVG(currentAbilityId);
         name.innerText = `${m.name} - ${m.ability.name}`;
         desc.innerText = m.ability.desc;
-        if (m.ability.type === 'active') {
-            if (abilityCharge >= m.ability.cd) {
-                btnUseAbility.innerText = `发动技能！`; btnUseAbility.className = 'btn-use-ability ready'; btnUseAbility.disabled = false;
+        if (m.ability.cd > 0) {
+            if (m.ability.type === 'active') {
+                if (abilityCharge >= m.ability.cd) {
+                    btnUseAbility.innerText = `发动技能！`; btnUseAbility.className = 'btn-use-ability ready'; btnUseAbility.disabled = false;
+                } else {
+                    btnUseAbility.innerText = `充能中 (${abilityCharge}/${m.ability.cd})`; btnUseAbility.className = 'btn-use-ability'; btnUseAbility.disabled = true;
+                }
             } else {
-                btnUseAbility.innerText = `充能中 (${abilityCharge}/${m.ability.cd})`; btnUseAbility.className = 'btn-use-ability'; btnUseAbility.disabled = true;
+                btnUseAbility.innerText = `被动充能 (${abilityCharge}/${m.ability.cd})`; btnUseAbility.className = 'btn-use-ability'; btnUseAbility.disabled = true;
             }
         } else {
             btnUseAbility.innerText = `被动生效中`; btnUseAbility.className = 'btn-use-ability'; btnUseAbility.disabled = true;
@@ -989,12 +995,12 @@ function renderBestiary() {
         entry.innerHTML = `
             <div class="entry-img">${generateSVG(val)}</div>
             <div class="entry-name">${isUnlocked ? data.name : '???'}</div>
-            ${isUnlocked && data.ability ? `<div class="entry-ability"><b>${data.ability.type=='active'?'[主动]':'[被动]'} ${data.ability.name} ${data.ability.type=='active'?'(CD:'+data.ability.cd+')':''}</b><br>${data.ability.desc}</div>` : ''}
+            ${isUnlocked && data.ability ? `<div class="entry-ability"><b>${data.ability.type=='active'?'[主动]':'[被动]'} ${data.ability.name} ${data.ability.cd>0?'(CD:'+data.ability.cd+')':''}</b><br>${data.ability.desc}</div>` : ''}
             <div style="font-size:10px; color:#666; margin-top:auto; padding-top:5px;">LV. ${val}</div>
         `;
         if (isUnlocked) {
             entry.addEventListener('click', () => {
-                equippedAbilityId = val; localStorage.setItem('dnd2048Equipped_v9', val);
+                equippedAbilityId = val; localStorage.setItem('dnd2048Equipped_v10', val);
                 renderBestiary();
                 let oldText = document.querySelector('.bestiary-subtitle').innerText;
                 document.querySelector('.bestiary-subtitle').innerText = `已预设：${data.name} (将在点击“重新试炼”时生效)`;
@@ -1044,19 +1050,23 @@ function move(direction) {
                     } else {
                         if ((currentAbilityId == 2048 && Math.random() < 0.05) || (currentAbilityId == 262144 && Math.random() < 0.1)) {
                             newVal *= 2; isCrit = true;
-                            if (currentAbilityId == 262144) deductGold(-1); // +1 Gold
+                            if (currentAbilityId == 262144) { deductGold(-1); showFloatingVFX(nextX, nextY, "+1 G"); }
                         }
                         
-                        // 被动：火元素合成燃焰之颅直接变火元素
                         if (currentAbilityId == 512 && newVal === 256) {
                             newVal = 512;
                             isFireUp = true;
                         }
                     }
                     
+                    if (currentAbilityId == 64 && newVal === 64) {
+                        ogreMergeCount++;
+                        if (ogreMergeCount >= 4) { ogreMergeCount = 0; deductGold(-1); showFloatingVFX(nextX, nextY, "+1 G"); }
+                    }
+                    if (currentAbilityId == 8192 && newVal === 8192) { deductGold(-20); showFloatingVFX(nextX, nextY, "+20 G"); }
+
                     if (newVal === 524288) {
-                        lichUsed = false; 
-                        goldCosts = {kill: 2, rewind: 2, swap: 2};
+                        lichUsed = false; goldCosts = {kill: 2, rewind: 2, swap: 2};
                     }
 
                     let newId = nextTileId++;
@@ -1083,6 +1093,14 @@ function move(direction) {
 
         board = newBoard; updateScore(scoreAdd);
         abilityCharge++; updateAbilityUI();
+        
+        // 被动：多头蛇 随机重分配
+        if (currentAbilityId == 4096) abilityShuffle(true);
+        // 被动：眼魔 充能满施放
+        if (currentAbilityId == 131072 && abilityCharge >= 10) {
+            let maxVal = Math.max(...board.flat().filter(c=>c).map(c=>c.val));
+            if(abilityDestroyCond(v => v < maxVal, 1, true) > 0) abilityCharge = 0;
+        }
 
         // 终极判定
         let hasTiamat = board.flat().some(c => c && c.val === 2097152);
@@ -1121,7 +1139,7 @@ function handleGameOverGold() {
     let earnedGold = Math.floor(baseGold * multi);
     
     totalGold += earnedGold;
-    localStorage.setItem('dnd2048Gold_v9', totalGold);
+    localStorage.setItem('dnd2048Gold_v10', totalGold);
     uiGold.innerText = totalGold;
     return earnedGold;
 }
@@ -1177,8 +1195,8 @@ gameContainer.addEventListener('touchend', e => {
     else if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 30) move(dy > 0 ? 'down' : 'up');
 });
 
-document.getElementById('btn-restart').addEventListener('click', () => { overlay.classList.remove('active'); localStorage.removeItem('dnd2048GameState_v9'); initGame(true); });
-document.getElementById('btn-msg-action').addEventListener('click', () => { overlay.classList.remove('active'); localStorage.removeItem('dnd2048GameState_v9'); initGame(true); });
+document.getElementById('btn-restart').addEventListener('click', () => { overlay.classList.remove('active'); localStorage.removeItem('dnd2048GameState_v10'); initGame(true); });
+document.getElementById('btn-msg-action').addEventListener('click', () => { overlay.classList.remove('active'); localStorage.removeItem('dnd2048GameState_v10'); initGame(true); });
 
 initGame();
 </script>
