@@ -333,19 +333,19 @@ const MONSTERS = {
     16: { name: "冰魔蝠", pixels: [ "................", "................", ".H........H.....", "..HH....HH......", "...H.HH.H.......", "...H.A1.H.......", "..HA.AA.AH......", "...HAAAAH.......", ".....AA.........", "....AAAA........", "...AA..AA.......", "..0A....A0......", "................", "................", "................", "................" ],
         ability: { name: '寒气凝结', type: 'active', cd: 20, desc: '场上有冰魔蝠时，可以冻结一个指定魔物 5 回合' } },
     32: { name: "食尸鬼", pixels: [ "................", "................", "......33........", ".....3333.......", "....3413........", "....344333......", ".....333333.....", "....3333333.....", "...33...333.....", "..33......33....", "..0.......033...", "...........0....", "................", "................", "................", "................" ],
-        ability: { name: '同类相食', type: 'active', cd: 60, desc: '场上指定的一个食尸鬼吞噬其周边的所有魔物，然后自身升级为食人魔' } },
+        ability: { name: '同类相食', type: 'active', cd: 30, desc: '指定一个食尸鬼吞噬附近所有食尸鬼，吞噬1/2/3/4个分别升级为食人魔/燃焰之颅/美杜莎/云巨人' } },
     64: { name: "食人魔", pixels: [ "................", "......GG........", ".....G0GG.......", ".....GGGG.......", "...GGGGGGGG.....", "..G..GGGG..F....", ".0...GGGG..F....", ".....GGGG..F....", ".....EEEE..F....", ".....EEEEE.F....", ".....GG.GG.F....", "....GG...GG0....", "....0.....0.....", "................", "................", "................" ],
         ability: { name: '贪婪', type: 'passive', cd: 0, desc: '当局结束获得额外10%金币。每合成四个食人魔获得1金币。' } },
     128: { name: "移位兽", pixels: [ "...C........C...", "...C........C...", "...CC......CC...", "....C......C....", ".....00DD00.....", "...0D0DDD0D0....", "...04DDDDDD0....", "...0DDDDDDDD0...", "....0DDDDDD0....", "....D.D.D.DD....", "...0D.0.0.0D....", "...0......0.....", "................", "................", "................", "................" ],
-        ability: { name: '幻象移位', type: 'active', cd: 5, desc: '交换场上移位兽附近指定两个魔物的位置' } },
+        ability: { name: '幻象移位', type: 'active', cd: 30, desc: '场上有移位兽时，交换场上指定两个魔物的位置' } },
     256: { name: "燃焰之颅", pixels: [ "................", "......88........", "....889988......", "...89933998.....", "...893030398....", "...893343398....", "....89300398....", ".....893398.....", "......8888......", ".......88.......", "................", "................", "................", "................", "................", "................" ],
         ability: { name: '火球术', type: 'active', cd: 90, desc: '场上有燃焰之颅时，随机摧毁 5 个 128 级及以下的魔物' } },
     512: { name: "火元素", pixels: [ "................", ".......4........", "......464.......", ".....46764......", "....4677764.....", "...467161764....", "...467777764....", "...467777764....", "...466777664....", "....4466644.....", "....4.444.4.....", "...4.......4....", "................", "................", "................", "................" ],
-        ability: { name: '元素火种', type: 'passive', cd: 0, desc: '合成出的燃焰之颅直接升级为火元素' } },
+        ability: { name: '元素火种', type: 'passive', cd: 0, desc: '合成出的燃焰之颅有概率直接升为火元素。场上每有一个火元素，所有合成获得额外100%积分，可叠加。' } },
     1024: { name: "美杜莎", pixels: [ "................", "......88........", ".....8888.......", "....88G888......", "....8G8G88......", "...88GGG88..E...", "...8.GGG.8..E...", ".....GGG....E...", ".....AAA....E...", "....A.A.A.E.E...", "...A..A..AE.E...", "...0..A..A0.0...", ".....G.G........", ".....0.0........", "................", "................" ],
         ability: { name: '石化凝视', type: 'active', cd: 20, desc: '场上有美杜莎时，冻结场上指定的 4 个魔物 4 回合' } },
     2048: { name: "夺心魔", pixels: [ "................", "......CC........", ".....CCCC.......", "....CC1CCC......", "....CCCCCC......", ".....C.CC.......", "....C..C.C......", "....D..D..D.....", "...DDDDDDDD.....", "..DDD.DD.DDD....", "..D.D.DD.D.D....", ".D..D.DD.D..D...", ".0..D.DD.D..0...", "....0.00.0......", "................", "................" ],
-        ability: { name: '异能激荡', type: 'passive', cd: 0, desc: '合成时有 5% 概率暴击，产物直升 2 级' } },
+        ability: { name: '异能激荡', type: 'passive', cd: 0, desc: '合成时有概率暴击。5%产物直升2级，2%产物直升3级。' } },
     4096: { name: "多头蛇", pixels: [ "................", "....9....9......", "...949..949.....", "....9....9..9...", ".....9..9..949..", "...9..999...9...", "..949..9....9...", "...9...99999....", ".......99999....", "......9999999...", "......9999999...", "......99...99...", ".....99.....99..", ".....0.......0..", "................", "................" ],
         ability: { name: '多重乱斩', type: 'passive', cd: 0, desc: '每次移动，随机分配场上所有魔物的位置' } },
     8192: { name: "云巨人", pixels: [ "................", "......HA........", ".....HHHA.......", ".....H0HA.......", ".....HHHH.......", "...1.AAAA.2.....", "..111AAAA222....", "..1A1AAAA2A2....", "...A.AAAA.A.....", ".....AAAA.......", ".....A..A.......", "....AA..AA......", "....AA..AA......", "....00..00......", "................", "................" ],
@@ -357,7 +357,7 @@ const MONSTERS = {
     65536: { name: "吸血鬼", pixels: [ "................", "......33........", ".....3413.......", "....443344......", "...44033044.....", "...04000040.....", "...00000000.....", "...00000000.....", "...000..000.....", "...0.0..0.0.....", "..0..0..0..0....", "..0..0..0..0....", "..0..0..0..0....", "..0..0..0..0....", "................", "................" ],
         ability: { name: '生命汲取', type: 'active', cd: 90, desc: '随机摧毁 1 个非最高级魔物，随机升级 1 个非最高级魔物' } },
     131072: { name: "眼魔", pixels: [ "................", "...8.8..8.8.....", "..8...88...8....", "...8.EEEE.8.....", "..8EE1111EE8....", "..EEE1441EEE....", ".EEEE1441EEEE...", ".EEEE1111EEEE...", ".EEEEEEEEEEEE...", "..EEEE00EEEE....", "...EEEEEEEE.....", "....EEEEEE......", "................", "................", "................", "................" ],
-        ability: { name: '解离射线', type: 'passive', cd: 10, desc: '随机摧毁场上一个非最高级魔物' } },
+        ability: { name: '解离射线', type: 'passive', cd: 10, desc: '充能满10次后，自动随机摧毁场上一个非最高级魔物。' } },
     262144: { name: "银龙", pixels: [ "................", "........33......", ".......3333.....", "......313333....", "...22..3333..22.", "..2222.3333.2222", ".223222333322232", "2233322333322333", "22....233332....", "2......3333.....", "........33......", ".......3..3.....", "......33..33....", "......0....0....", "................", "................" ],
         ability: { name: '正义祝福', type: 'passive', cd: 0, desc: '合成时有 10% 概率暴击（直升 2 级），并立即获得 1 金币' } },
     524288: { name: "巫妖", pixels: [ "................", "......77........", ".....7337.......", "....73A3A7......", ".....3333.......", "....C3333C......", "...CCCDDCCC.....", "...C.CDDC.C.....", "..C..CDDC..C....", "..0..CDDC..0....", ".....CDDC.......", ".....C..C.......", "....CC..CC......", "....00..00......", "................", "................" ],
@@ -568,7 +568,7 @@ function createTileDOM(id, val, x, y, isMerge = false, isCrit = false, isFireUp 
         el.appendChild(ft);
     }
     if (isFireUp) {
-        let ft = document.createElement('div'); ft.className = 'floating-text'; ft.innerText = '🔥元素觉醒';
+        let ft = document.createElement('div'); ft.className = 'floating-text'; ft.innerText = '🔥火元觉醒';
         ft.style.left = "50%"; ft.style.top = "50%"; ft.style.color = "#ff9800";
         el.appendChild(ft);
     }
@@ -701,24 +701,30 @@ document.getElementById('btn-g-rewind').addEventListener('click', () => {
     if (totalGold < cost || history.length === 0) return;
     
     deductGold(cost);
-    // 回退价格单独计算，并强行保留覆盖到旧存档状态中
-    let nextCost = Math.min(100, goldCosts.rewind * 2);
-    let currentKillCost = goldCosts.kill;
-    let currentSwapCost = goldCosts.swap;
     
+    // **核心修改点**：计算本次时光倒流后，其下次的新花费，并缓存当前所有的金币能力花费、能力状态。
+    let nextRewindCost = Math.min(100, goldCosts.rewind * 2);
+    let currentGoldCosts = {...goldCosts};
+    currentGoldCosts.rewind = nextRewindCost; // 应用翻倍
+    
+    // 缓存当前不会受到时间影响的能力机制与系统状态
+    let currentAbilityCharge = abilityCharge;
+    let currentLichUsed = lichUsed;
+    let currentOgreMergeCount = ogreMergeCount;
+
     let goBack = Math.min(10, history.length);
     let state;
     for(let i=0; i<goBack; i++) state = history.pop();
 
+    // 只恢复盘面和分数相关数据
     board = state.board.map(row => row.map(c => c ? { ...c } : null));
     score = state.score; nextTileId = state.nextTileId;
-    abilityCharge = state.abilityCharge; lichUsed = state.lichUsed;
-    ogreMergeCount = state.ogreMergeCount || ogreMergeCount;
     
-    // 金币价格不随时间倒流而回退
-    goldCosts.kill = currentKillCost;
-    goldCosts.swap = currentSwapCost;
-    goldCosts.rewind = nextCost; 
+    // 维持时光倒流前的各项被动充能状态与金币价格
+    abilityCharge = currentAbilityCharge;
+    lichUsed = currentLichUsed;
+    ogreMergeCount = currentOgreMergeCount;
+    goldCosts = currentGoldCosts; 
     
     scoreEl.innerText = score;
     tileContainer.innerHTML = ''; tilesMap = {};
@@ -897,21 +903,30 @@ btnUseAbility.addEventListener('click', () => {
         }); return;
     }
     if (currentAbilityId == 32) {
-        if (!board.flat().some(c => c && c.val === 32)) return;
-        startTargeting("同类相食：选择1个食尸鬼", c => c.val === 32, 1, tgts => {
-            let g = tgts[0];
-            [[0,1], [0,-1], [1,0], [-1,0]].forEach(d => {
-                let ny = g.y + d[0], nx = g.x + d[1];
-                if(ny>=0 && ny<SIZE && nx>=0 && nx<SIZE && board[ny][nx]) {
-                    removeTileDOM(board[ny][nx].id, true); board[ny][nx] = null;
-                }
+        let validCount = 0;
+        for(let y=0;y<SIZE;y++)for(let x=0;x<SIZE;x++){ if(board[y][x] && board[y][x].val === 32 && hasAdjacent(x,y,32)>0) validCount++; }
+        if (validCount === 0) return;
+        startTargeting("同类相食：选择要吞噬的食尸鬼", (c, x, y) => c.val === 32 && hasAdjacent(x,y,32)>0, 1, tgts => {
+            let tgt = tgts[0]; let ghouls = [];
+            [[0,1],[0,-1],[1,0],[-1,0]].forEach(d => {
+                let ny = tgt.y+d[0], nx = tgt.x+d[1];
+                if(ny>=0 && ny<SIZE && nx>=0 && nx<SIZE && board[ny][nx] && board[ny][nx].val === 32) ghouls.push({x:nx, y:ny, id: board[ny][nx].id});
             });
-            removeTileDOM(board[g.y][g.x].id, false);
-            let newId = nextTileId++; board[g.y][g.x] = {id: newId, val: 64, frozen: 0};
-            createTileDOM(newId, 64, g.x, g.y); executeAbilityFinish();
+            let gCount = ghouls.length;
+            let targetTiers = {1: 64, 2: 256, 3: 1024, 4: 8192};
+            let upgradeVal = targetTiers[gCount] || 8192;
+
+            board[tgt.y][tgt.x] = null; removeTileDOM(tgt.cell.id, true);
+            ghouls.forEach(g => { board[g.y][g.x] = null; removeTileDOM(g.id, true); });
+
+            let newId1 = nextTileId++; board[tgt.y][tgt.x] = {id: newId1, val: upgradeVal, frozen: 0};
+            createTileDOM(newId1, upgradeVal, tgt.x, tgt.y, false, false, true);
+
+            executeAbilityFinish();
         }); return;
     }
     if (currentAbilityId == 128) {
+        if (!board.flat().some(c => c && c.val === 128)) return;
         let validCount = 0;
         for(let y=0;y<SIZE;y++)for(let x=0;x<SIZE;x++){ if(board[y][x] && hasAdjacent(x,y,128)>0) validCount++; }
         if (validCount < 2) return; 
@@ -933,12 +948,6 @@ btnUseAbility.addEventListener('click', () => {
             updateFreezeUI(); executeAbilityFinish();
         }); return;
     }
-    if (currentAbilityId == 256) {
-        if (!board.flat().some(c => c && c.val === 256)) return;
-        let success = abilityDestroyCond(v => v <= 128, 5, true);
-        if (success) executeAbilityFinish();
-        return;
-    }
     if (currentAbilityId == 1024) {
         if (!board.flat().some(c => c && c.val === 1024)) return;
         let count = board.flat().filter(c => c && c.frozen <= 0).length;
@@ -959,7 +968,10 @@ btnUseAbility.addEventListener('click', () => {
 
     // --- 瞬发类主动技能 ---
     let success = false;
-    if (currentAbilityId == 65536) success = abilityVampire();
+    if (currentAbilityId == 256) {
+        if (board.flat().some(c => c && c.val === 256)) success = abilityDestroyCond(v => v <= 128, 5, true) > 0;
+    }
+    else if (currentAbilityId == 65536) success = abilityVampire();
     else if (currentAbilityId == 1048576) {
         let maxVal = Math.max(...board.flat().filter(c=>c).map(c=>c.val));
         let count = abilityDestroyCond(v => v < maxVal, 999, true);
@@ -1072,21 +1084,35 @@ function move(direction) {
                     let newVal = target.val * 2;
                     let isCrit = false;
                     let isFireUp = false;
+                    let baseScore = newVal;
                     
                     // 彩蛋：双提亚马特降级为洞穴鼠
                     if (target.val === 2097152) {
                         newVal = 2;
+                        baseScore = 2;
                     } else {
-                        if ((currentAbilityId == 2048 && Math.random() < 0.05) || (currentAbilityId == 262144 && Math.random() < 0.1)) {
-                            newVal *= 2; isCrit = true;
-                            if (currentAbilityId == 262144) { deductGold(-1); showFloatingVFX(nextX, nextY, "+1 G"); }
+                        let r = Math.random();
+                        if (currentAbilityId == 2048) {
+                            if (r < 0.02) { newVal *= 8; isCrit = true; } // +3
+                            else if (r < 0.07) { newVal *= 4; isCrit = true; } // +2
+                        } else if (currentAbilityId == 262144) {
+                            if (r < 0.1) { newVal *= 4; isCrit = true; deductGold(-1); showFloatingVFX(nextX, nextY, "+1 G"); }
                         }
                         
-                        // 被动：火元素合成燃焰之颅直接变火元素
+                        // 被动：火元素合成燃焰之颅50%直接变火元素
                         if (currentAbilityId == 512 && newVal === 256) {
-                            newVal = 512;
-                            isFireUp = true;
+                            if (Math.random() < 0.5) {
+                                newVal = 512;
+                                isFireUp = true;
+                            }
                         }
+                    }
+                    
+                    // 被动积分计算（火元素被动）
+                    let localScoreAdd = baseScore;
+                    if (currentAbilityId == 512) {
+                        let fireCount = board.flat().filter(c => c && c.val === 512).length;
+                        if (fireCount > 0) localScoreAdd = localScoreAdd * (1 + fireCount);
                     }
                     
                     if (currentAbilityId == 64 && newVal === 64) {
@@ -1101,7 +1127,7 @@ function move(direction) {
 
                     let newId = nextTileId++;
                     newBoard[nextY][nextX] = { id: newId, val: newVal, frozen: 0 };
-                    mergedMap[nextY][nextX] = true; scoreAdd += newVal; moved = true;
+                    mergedMap[nextY][nextX] = true; scoreAdd += localScoreAdd; moved = true;
 
                     moves.push({ id: cell.id, toX: nextX, toY: nextY, destroy: true });
                     moves.push({ id: target.id, toX: nextX, toY: nextY, destroy: true });
@@ -1124,7 +1150,7 @@ function move(direction) {
         board = newBoard; updateScore(scoreAdd);
         abilityCharge++; updateAbilityUI();
         
-        // 被动：多头蛇 随机重分配
+        // 被动：多头蛇 随机重分配 (每次移动)
         if (currentAbilityId == 4096) abilityShuffle(true);
         // 被动：眼魔 充能满施放
         if (currentAbilityId == 131072 && abilityCharge >= 10) {
@@ -1132,7 +1158,7 @@ function move(direction) {
             if(abilityDestroyCond(v => v < maxVal, 1, true) > 0) abilityCharge = 0;
         }
 
-        // 终极判定
+        // 终极判定：提亚马特
         let hasTiamat = board.flat().some(c => c && c.val === 2097152);
         if (currentAbilityId == 2097152 && hasTiamat) {
             for(let y=0;y<SIZE;y++) for(let x=0;x<SIZE;x++) {
