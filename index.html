@@ -357,7 +357,7 @@ const MONSTERS = {
     65536: { name: "吸血鬼", pixels: [ "................", "......33........", ".....3413.......", "....443344......", "...44033044.....", "...04000040.....", "...00000000.....", "...00000000.....", "...000..000.....", "...0.0..0.0.....", "..0..0..0..0....", "..0..0..0..0....", "..0..0..0..0....", "..0..0..0..0....", "................", "................" ],
         ability: { name: '生命汲取', type: 'active', cd: 90, desc: '随机摧毁 1 个非最高级魔物，随机升级 1 个非最高级魔物' } },
     131072: { name: "眼魔", pixels: [ "................", "...8.8..8.8.....", "..8...88...8....", "...8.EEEE.8.....", "..8EE1111EE8....", "..EEE1441EEE....", ".EEEE1441EEEE...", ".EEEE1111EEEE...", ".EEEEEEEEEEEE...", "..EEEE00EEEE....", "...EEEEEEEE.....", "....EEEEEE......", "................", "................", "................", "................" ],
-        ability: { name: '解离射线', type: 'passive', cd: 10, desc: '随机摧毁场上一个非最高级魔物。' } },
+        ability: { name: '解离射线', type: 'passive', cd: 10, desc: '随机摧毁场上一个非最高级魔物' } },
     262144: { name: "银龙", pixels: [ "................", "........33......", ".......3333.....", "......313333....", "...22..3333..22.", "..2222.3333.2222", ".223222333322232", "2233322333322333", "22....233332....", "2......3333.....", "........33......", ".......3..3.....", "......33..33....", "......0....0....", "................", "................" ],
         ability: { name: '正义祝福', type: 'passive', cd: 0, desc: '合成时有 10% 概率暴击（直升 2 级），并立即获得 1 金币' } },
     524288: { name: "巫妖", pixels: [ "................", "......77........", ".....7337.......", "....73A3A7......", ".....3333.......", "....C3333C......", "...CCCDDCCC.....", "...C.CDDC.C.....", "..C..CDDC..C....", "..0..CDDC..0....", ".....CDDC.......", ".....C..C.......", "....CC..CC......", "....00..00......", "................", "................" ],
@@ -365,7 +365,7 @@ const MONSTERS = {
     1048576: { name: "泰拉斯奎", pixels: [ "................", ".......555......", "......55555.....", ".....5555555....", "....5F5F5F5F5...", "...55F5F5F5F55..", "...5GGGGGGGG5...", "..5G1G1GGGGGG5..", "..5GGGGGGGGGG5..", "..55G0GG00G055..", "...5G..GG..G5...", "...0....0...0...", "................", "................", "................", "................" ],
         ability: { name: '末日吞噬', type: 'active', cd: 100, desc: '摧毁所有比当前最高级魔物等级低的魔物，获得相当于摧毁数量三倍的金币' } },
     2097152: { name: "提亚马特", pixels: [ "...3........A...", "..343..0...A4A..", "...3..040...A...", ".......0........", ".4...........8..", "444..55555..848.", ".4..5555555..8..", "....5555555.....", "...555...555....", "..5555...5555...", "..555.....555...", "..55.......55...", "..0.........0...", "................", "................", "................" ],
-        ability: { name: '神圣干涉', type: 'passive', cd: 0, desc: '当场上有提亚马特时，填满提亚马特，宣告终结胜利' } }
+        ability: { name: '神圣干涉', type: 'passive', cd: 0, desc: '当场上有提亚马特时，填满提亚马特宣告终结胜利' } }
 };
 
 function generateSVG(val) {
@@ -381,23 +381,41 @@ function generateSVG(val) {
     return `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" class="tile-img">${rects}</svg>`;
 }
 
+// 数据迁移系统（无缝保留您的历史记录）
+function migrateLegacyData() {
+    const vars = ['Gold', 'Best', 'Unlocked', 'Equipped', 'GameState'];
+    const suffixes = ['_v10', '_v9', '_v8', '_v7'];
+    vars.forEach(v => {
+        let currentKey = `dnd2048${v}`;
+        if (localStorage.getItem(currentKey) === null) {
+            for (let suffix of suffixes) {
+                let old = localStorage.getItem(`${currentKey}${suffix}`);
+                if (old !== null) { localStorage.setItem(currentKey, old); break; }
+            }
+        }
+    });
+}
+migrateLegacyData();
+
 // ---------------- 游戏引擎 ----------------
 const SIZE = 5;
 let board = [];
 let tilesMap = {};
 let score = 0;
-let bestScore = localStorage.getItem('dnd2048Best_v10') || 0;
-let totalGold = parseInt(localStorage.getItem('dnd2048Gold_v10')) || 0;
+let bestScore = localStorage.getItem('dnd2048Best') || 0;
+let totalGold = parseInt(localStorage.getItem('dnd2048Gold')) || 0;
 let history = []; 
-let unlocked = JSON.parse(localStorage.getItem('dnd2048Unlocked_v10')) || [2, 4]; 
+let unlocked = JSON.parse(localStorage.getItem('dnd2048Unlocked')) || [2, 4]; 
 
 let nextTileId = 1;
 let isAnimating = false;
 
+// 瞄准系统
 let isTargetingMode = false;
 let targetingConfig = null; 
 
-let equippedAbilityId = localStorage.getItem('dnd2048Equipped_v10') || null; 
+// 能力状态
+let equippedAbilityId = localStorage.getItem('dnd2048Equipped') || null; 
 let currentAbilityId = null;  
 let abilityCharge = 0;
 let lichUsed = false;
@@ -421,13 +439,13 @@ function saveGameData() {
         currentAbilityId: currentAbilityId, abilityCharge: abilityCharge, 
         lichUsed: lichUsed, goldCosts: goldCosts, ogreMergeCount: ogreMergeCount
     };
-    localStorage.setItem('dnd2048GameState_v10', JSON.stringify(gameState));
+    localStorage.setItem('dnd2048GameState', JSON.stringify(gameState));
 }
 
 function initGame(forceRestart = false) {
     let savedState = null;
     if (!forceRestart) {
-        try { savedState = JSON.parse(localStorage.getItem('dnd2048GameState_v10')); } catch(e) {}
+        try { savedState = JSON.parse(localStorage.getItem('dnd2048GameState')); } catch(e) {}
     }
 
     if (savedState && savedState.board) {
@@ -478,7 +496,7 @@ function updateScore(add) {
     score += add; scoreEl.innerText = score;
     if (score > bestScore) {
         bestScore = score; bestEl.innerText = bestScore;
-        localStorage.setItem('dnd2048Best_v10', bestScore);
+        localStorage.setItem('dnd2048Best', bestScore);
     }
 }
 
@@ -491,7 +509,7 @@ function getEmptyCells(currentBoard) {
 function checkUnlock(val) {
     if (!unlocked.includes(val) && MONSTERS[val]) {
         unlocked.push(val);
-        localStorage.setItem('dnd2048Unlocked_v10', JSON.stringify(unlocked));
+        localStorage.setItem('dnd2048Unlocked', JSON.stringify(unlocked));
         renderBestiary();
     }
 }
@@ -655,7 +673,7 @@ gameContainer.addEventListener('click', (e) => {
 // ---- 金币能力逻辑 ----
 function deductGold(amount) {
     totalGold -= amount;
-    localStorage.setItem('dnd2048Gold_v10', totalGold);
+    localStorage.setItem('dnd2048Gold', totalGold);
     uiGold.innerText = totalGold;
 }
 
@@ -683,9 +701,10 @@ document.getElementById('btn-g-rewind').addEventListener('click', () => {
     if (totalGold < cost || history.length === 0) return;
     
     deductGold(cost);
+    // 回退价格单独计算，并强行保留覆盖到旧存档状态中
     let nextCost = Math.min(100, goldCosts.rewind * 2);
-    let keptGoldCosts = {...goldCosts};
-    keptGoldCosts.rewind = nextCost;
+    let currentKillCost = goldCosts.kill;
+    let currentSwapCost = goldCosts.swap;
     
     let goBack = Math.min(10, history.length);
     let state;
@@ -695,7 +714,11 @@ document.getElementById('btn-g-rewind').addEventListener('click', () => {
     score = state.score; nextTileId = state.nextTileId;
     abilityCharge = state.abilityCharge; lichUsed = state.lichUsed;
     ogreMergeCount = state.ogreMergeCount || ogreMergeCount;
-    goldCosts = keptGoldCosts; 
+    
+    // 金币价格不随时间倒流而回退
+    goldCosts.kill = currentKillCost;
+    goldCosts.swap = currentSwapCost;
+    goldCosts.rewind = nextCost; 
     
     scoreEl.innerText = score;
     tileContainer.innerHTML = ''; tilesMap = {};
@@ -910,6 +933,12 @@ btnUseAbility.addEventListener('click', () => {
             updateFreezeUI(); executeAbilityFinish();
         }); return;
     }
+    if (currentAbilityId == 256) {
+        if (!board.flat().some(c => c && c.val === 256)) return;
+        let success = abilityDestroyCond(v => v <= 128, 5, true);
+        if (success) executeAbilityFinish();
+        return;
+    }
     if (currentAbilityId == 1024) {
         if (!board.flat().some(c => c && c.val === 1024)) return;
         let count = board.flat().filter(c => c && c.frozen <= 0).length;
@@ -930,17 +959,17 @@ btnUseAbility.addEventListener('click', () => {
 
     // --- 瞬发类主动技能 ---
     let success = false;
-    if (currentAbilityId == 256) {
-        if (board.flat().some(c => c && c.val === 256)) success = abilityDestroyCond(v => v <= 128, 5, true) > 0;
-    }
-    else if (currentAbilityId == 65536) success = abilityVampire();
+    if (currentAbilityId == 65536) success = abilityVampire();
     else if (currentAbilityId == 1048576) {
         let maxVal = Math.max(...board.flat().filter(c=>c).map(c=>c.val));
         let count = abilityDestroyCond(v => v < maxVal, 999, true);
         if (count > 0) { deductGold(-(count * 3)); showFloatingVFX(2, 2, `+${count*3} G`); success = true; }
     }
 
-    if (success) executeAbilityFinish(currentAbilityId == 65536);
+    if (success) {
+        let skipGlobal = [65536].includes(currentAbilityId);
+        executeAbilityFinish(skipGlobal);
+    }
 });
 
 function executeAbilityFinish(skipGlobalVFX = false) {
@@ -1000,7 +1029,7 @@ function renderBestiary() {
         `;
         if (isUnlocked) {
             entry.addEventListener('click', () => {
-                equippedAbilityId = val; localStorage.setItem('dnd2048Equipped_v10', val);
+                equippedAbilityId = val; localStorage.setItem('dnd2048Equipped', val);
                 renderBestiary();
                 let oldText = document.querySelector('.bestiary-subtitle').innerText;
                 document.querySelector('.bestiary-subtitle').innerText = `已预设：${data.name} (将在点击“重新试炼”时生效)`;
@@ -1053,6 +1082,7 @@ function move(direction) {
                             if (currentAbilityId == 262144) { deductGold(-1); showFloatingVFX(nextX, nextY, "+1 G"); }
                         }
                         
+                        // 被动：火元素合成燃焰之颅直接变火元素
                         if (currentAbilityId == 512 && newVal === 256) {
                             newVal = 512;
                             isFireUp = true;
@@ -1139,7 +1169,7 @@ function handleGameOverGold() {
     let earnedGold = Math.floor(baseGold * multi);
     
     totalGold += earnedGold;
-    localStorage.setItem('dnd2048Gold_v10', totalGold);
+    localStorage.setItem('dnd2048Gold', totalGold);
     uiGold.innerText = totalGold;
     return earnedGold;
 }
@@ -1195,8 +1225,8 @@ gameContainer.addEventListener('touchend', e => {
     else if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 30) move(dy > 0 ? 'down' : 'up');
 });
 
-document.getElementById('btn-restart').addEventListener('click', () => { overlay.classList.remove('active'); localStorage.removeItem('dnd2048GameState_v10'); initGame(true); });
-document.getElementById('btn-msg-action').addEventListener('click', () => { overlay.classList.remove('active'); localStorage.removeItem('dnd2048GameState_v10'); initGame(true); });
+document.getElementById('btn-restart').addEventListener('click', () => { overlay.classList.remove('active'); localStorage.removeItem('dnd2048GameState'); initGame(true); });
+document.getElementById('btn-msg-action').addEventListener('click', () => { overlay.classList.remove('active'); localStorage.removeItem('dnd2048GameState'); initGame(true); });
 
 initGame();
 </script>
