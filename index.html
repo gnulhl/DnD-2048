@@ -163,6 +163,8 @@
         .message-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(5,5,5,0.95); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 500; border-radius: 8px; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
         .message-overlay.active { opacity: 1; pointer-events: all; }
         .message-overlay h2 { font-size: 36px; color: var(--gold); margin-bottom: 10px; text-shadow: 0 0 15px #ff0000; text-align: center; }
+        
+        .btn-restart-top { background: var(--btn-bg); color: var(--gold); border: 1px solid var(--gold); padding: 8px 30px; border-radius: 4px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.5); font-size: 14px; margin-bottom: 15px; }
 
         @media (max-width: 600px) { .bestiary-grid { grid-template-columns: repeat(2, 1fr); } .entry-img { width: 50px; height: 50px; } }
     </style>
@@ -235,13 +237,13 @@ const MONSTERS = {
     256: { name: "燃焰之颅", pixels: [ "................", "......88........", "....889988......", "...89933998.....", "...893030398....", "...893343398....", "....89300398....", ".....893398.....", "......8888......", ".......88.......", "................", "................", "................", "................", "................", "................" ],
         ability: { name: '火球术', type: 'active', cd: 90, desc: '场上有燃焰之颅时，随机摧毁 5 个 128 级及以下的魔物' } },
     512: { name: "火元素", pixels: [ "................", ".......4........", "......464.......", ".....46764......", "....4677764.....", "...467161764....", "...467777764....", "...467777764....", "...466777664....", "....4466644.....", "....4.444.4.....", "...4.......4....", "................", "................", "................", "................" ],
-        ability: { name: '元素火种', type: 'passive', cd: 0, desc: '合成燃焰之颅有概率直接升为火元素。场上每有一火元素，所有合成额外获得100%积分。' } },
+        ability: { name: '元素火种', type: 'passive', cd: 0, desc: '合成燃焰之颅有50%概率直升为火元素。场上每有一火元素，所有合成额外获得100%积分。' } },
     1024: { name: "美杜莎", pixels: [ "................", "......88........", ".....8888.......", "....88G888......", "....8G8G88......", "...88GGG88..E...", "...8.GGG.8..E...", ".....GGG....E...", ".....AAA....E...", "....A.A.A.E.E...", "...A..A..AE.E...", "...0..A..A0.0...", ".....G.G........", ".....0.0........", "................", "................" ],
         ability: { name: '石化凝视', type: 'active', cd: 20, desc: '场上有美杜莎时，冻结场上指定的 4 个魔物 4 回合' } },
     2048: { name: "夺心魔", pixels: [ "................", "......CC........", ".....CCCC.......", "....CC1CCC......", "....CCCCCC......", ".....C.CC.......", "....C..C.C......", "....D..D..D.....", "...DDDDDDDD.....", "..DDD.DD.DDD....", "..D.D.DD.D.D....", ".D..D.DD.D..D...", ".0..D.DD.D..0...", "....0.00.0......", "................", "................" ],
         ability: { name: '异能激荡', type: 'passive', cd: 0, desc: '合成时有概率暴击。5%直升2级，2%直升3级' } },
     4096: { name: "多头蛇", pixels: [ "................", "....9....9......", "...949..949.....", "....9....9..9...", ".....9..9..949..", "...9..999...9...", "..949..9....9...", "...9...99999....", ".......99999....", "......9999999...", "......9999999...", "......99...99...", ".....99.....99..", ".....0.......0..", "................", "................" ],
-        ability: { name: '多重乱斩', type: 'passive', cd: 0, desc: '每次移动，随机分配场上所有魔物的位置' } },
+        ability: { name: '多重乱斩', type: 'active', cd: 60, desc: '主动释放：随机分配场上所有魔物的位置' } },
     8192: { name: "云巨人", pixels: [ "................", "......HA........", ".....HHHA.......", ".....H0HA.......", ".....HHHH.......", "...1.AAAA.2.....", "..111AAAA222....", "..1A1AAAA2A2....", "...A.AAAA.A.....", ".....AAAA.......", ".....A..A.......", "....AA..AA......", "....AA..AA......", "....00..00......", "................", "................" ],
         ability: { name: '财富之握', type: 'passive', cd: 0, desc: '当局结束获得额外25%金币。每合成一个云巨人获得20金币。' } },
     16384: { name: "底栖魔鱼", pixels: [ "................", ".........BBB....", ".......BBBBBB...", ".....BBBBBBBBB..", "....B4BBBBBBBBB.", "....B4BBBBBB...B", "....B4BBBBB.....", ".....BBBBB......", "..A...BB.BB.A...", ".AAA..B...B.AA..", ".A.A.B.....BA.A.", ".A...0.....0..A.", ".0............0.", "................", "................", "................" ],
@@ -290,7 +292,7 @@ function generateSVG(val) {
     return `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" class="tile-img">${rects}</svg>`;
 }
 
-// ---------------- 数据系统 (自动迁移) ----------------
+// ---------------- 数据系统 (自动迁移，确保保留进度) ----------------
 function migrateLegacyData() {
     const vars = ['Gold', 'Best', 'Unlocked', 'EquippedArr', 'UnlockedSlots', 'GameState'];
     const suffixes = ['_v13', '_v12', '_v11', '_v10', '_v9', '_v8', '_v7', ''];
@@ -767,6 +769,9 @@ function triggerActiveAbility(id) {
         let count = board.flat().filter(c => c && c.frozen <= 0).length; if (count === 0) return;
         startTargeting(1024, "石化凝视：冻结4个目标", c => c.frozen <= 0, Math.min(4, count), tgts => { tgts.forEach(t => board[t.y][t.x].frozen = 4); updateFreezeUI(); executeAbilityFinish(1024); }); return;
     }
+    if (id == 4096) {
+        if (abilityShuffle()) executeAbilityFinish(4096, true); return;
+    }
     if (id == 16384) {
         if (!board.flat().some(c => c && c.val <= 8192)) return;
         startTargeting(16384, "远古低语：选择不高于云巨人的魔物升级", c => c.val <= 8192, 1, tgts => {
@@ -1049,7 +1054,6 @@ function move(direction) {
             creates.forEach(c => createTileDOM(c.id, c.val, c.x, c.y, true, c.crit, c.fireUp));
             
             // 被动技能后处理
-            if (!isAbilityReplaced(4096) && hasActiveAbility(4096)) abilityShuffle(true);
             if (!isAbilityReplaced(131072) && hasActiveAbility(131072) && abilityCharges[131072] >= 10) {
                 let success = false; let maxVal = Math.max(...board.flat().filter(c=>c).map(c=>c.val));
                 if (hasActiveSynergy("冰晶解离")) {
