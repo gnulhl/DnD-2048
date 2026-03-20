@@ -3,85 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>龙与地下城 2048：流金岁月版</title>
+    <title>龙与地下城 2048：连携觉醒版</title>
     <style>
         :root {
-            --bg-color: #0c0b0e;
-            --panel-bg: #1a171c;
-            --text-main: #e6e1d8;
-            --text-muted: #8c8279;
-            --gold: #dfb15b;
-            --gold-bright: #ffd700;
-            --grid-bg: #1c181a;
-            --cell-bg: #110e0f;
+            --bg-color: #0c0b0e; --panel-bg: #1a171c; --text-main: #e6e1d8;
+            --text-muted: #8c8279; --gold: #dfb15b; --gold-bright: #ffd700;
+            --grid-bg: #1c181a; --cell-bg: #110e0f;
             --btn-bg: linear-gradient(180deg, #382c33 0%, #1e171b 100%);
+            --synergy-color: #e040fb;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-        
         body {
-            background-color: var(--bg-color);
-            background-image: linear-gradient(135deg, #161218 0%, #060507 100%);
-            color: var(--text-main);
-            font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
-            display: flex; flex-direction: column; align-items: center;
-            min-height: 100vh; overflow-x: hidden; padding: 20px 10px;
+            background-color: var(--bg-color); background-image: linear-gradient(135deg, #161218 0%, #060507 100%);
+            color: var(--text-main); font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; padding: 20px 10px;
         }
 
-        header {
-            width: 100%; max-width: 500px; display: flex;
-            justify-content: space-between; align-items: center; margin-bottom: 15px;
-        }
-
+        header { width: 100%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .title-area h1 { color: var(--gold); font-size: 26px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); letter-spacing: 1px; }
         .title-area p { font-size: 13px; color: var(--text-muted); }
 
         .stats-area { display: flex; gap: 8px; }
-        .stat-box {
-            background: linear-gradient(180deg, #2a2228 0%, #171316 100%);
-            border: 1px solid #483a42; padding: 5px 12px; border-radius: 6px;
-            text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.6); min-width: 60px;
-        }
+        .stat-box { background: linear-gradient(180deg, #2a2228 0%, #171316 100%); border: 1px solid #483a42; padding: 5px 10px; border-radius: 6px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.6); min-width: 55px; }
         .stat-box span { display: block; font-size: 10px; color: var(--gold); text-transform: uppercase; }
-        .stat-box strong { font-size: 16px; color: #fff; }
+        .stat-box strong { font-size: 15px; color: #fff; }
         .stat-box.gold-box strong { color: var(--gold-bright); text-shadow: 0 0 5px rgba(255,215,0,0.5); }
 
-        /* Ability Panel */
-        .ability-panel {
-            width: 100%; max-width: 500px; background: #1f1b1e;
-            border: 1px solid var(--gold); border-radius: 6px;
-            padding: 10px; margin-bottom: 10px; display: flex;
-            justify-content: space-between; align-items: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+        /* Synergies Panel (Moved to top) */
+        .synergies-container { width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+        .synergy-box { 
+            background: linear-gradient(135deg, #2a1b2e, #130a18); border: 1px solid var(--synergy-color); border-radius: 6px; padding: 8px 12px; 
+            box-shadow: 0 0 10px rgba(224, 64, 251, 0.3); display: none; animation: appear 0.3s forwards;
         }
-        .ability-info { display: flex; align-items: center; gap: 10px; flex: 1; }
-        .ability-icon { width: 36px; height: 36px; background: #000; border-radius: 4px; border: 1px solid #444; display: flex; align-items: center; justify-content: center; }
-        .ability-icon svg { width: 80%; height: 80%; image-rendering: pixelated; }
-        .ability-text { flex: 1; display: flex; flex-direction: column; }
-        .ability-name { font-size: 14px; font-weight: bold; color: var(--gold-bright); }
-        .ability-desc { font-size: 10px; color: var(--text-muted); line-height: 1.2; margin-top: 2px; }
+        .synergy-box.active { display: block; }
+        .synergy-header { font-size: 13px; font-weight: bold; color: var(--synergy-color); margin-bottom: 3px; display: flex; justify-content: space-between; align-items: center;}
+        .synergy-desc { font-size: 11px; color: #d1c4e9; line-height: 1.3; }
+        .synergy-tag { font-size: 9px; background: var(--synergy-color); color: #000; padding: 2px 5px; border-radius: 4px; }
+
+        /* Multi-Slot Panel */
+        .slots-container { display: flex; gap: 8px; width: 100%; max-width: 500px; margin-bottom: 10px; }
+        .slot { 
+            flex: 1; background: #1f1b1e; border: 1px solid #483a42; border-radius: 6px; padding: 8px 4px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.6); min-height: 85px; position: relative; transition: all 0.2s;
+        }
+        .slot.equipped { border-color: var(--gold); background: #2a2228; }
+        .slot.locked { border-color: #333; background: #111; cursor: pointer; opacity: 0.8; justify-content: center;}
+        .slot.locked:hover { border-color: var(--gold-bright); opacity: 1; }
+        .slot.empty { justify-content: center; color: var(--text-muted); font-size: 12px; }
         
-        .btn-use-ability {
-            background: var(--btn-bg); color: #aaa; border: 1px solid #444;
-            padding: 8px 12px; border-radius: 4px; font-weight: bold; font-family: inherit;
-            cursor: not-allowed; transition: all 0.3s; font-size: 12px; white-space: nowrap;
+        .slot-icon { width: 32px; height: 32px; background: #000; border-radius: 4px; border: 1px solid #444; display: flex; align-items: center; justify-content: center; margin-bottom: 4px; }
+        .slot-icon svg { width: 80%; height: 80%; image-rendering: pixelated; }
+        .slot-name { font-size: 11px; font-weight: bold; color: var(--gold-bright); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
+        
+        .slot-btn {
+            background: var(--btn-bg); color: #aaa; border: 1px solid #444; padding: 4px 0; width: 100%;
+            border-radius: 3px; font-weight: bold; font-family: inherit; font-size: 10px; margin-top: 4px;
         }
-        .btn-use-ability.ready {
-            background: linear-gradient(180deg, #558b2f 0%, #33691e 100%);
-            color: #fff; border-color: #8bc34a; cursor: pointer;
-            box-shadow: 0 0 10px rgba(139, 195, 74, 0.5); animation: pulse-btn 1.5s infinite;
+        .slot-btn.ready {
+            background: linear-gradient(180deg, #558b2f 0%, #33691e 100%); color: #fff; border-color: #8bc34a; cursor: pointer;
+            box-shadow: 0 0 8px rgba(139, 195, 74, 0.5); animation: pulse-btn 1.5s infinite;
         }
-        .btn-use-ability.ready:active { transform: translateY(2px); }
+        .slot-btn.ready:active { transform: translateY(2px); }
+
+        .lock-icon { font-size: 20px; margin-bottom: 5px; }
+        .lock-price { font-size: 10px; color: var(--gold-bright); font-weight: bold; text-align: center;}
 
         /* Gold Abilities */
-        .gold-abilities {
-            width: 100%; max-width: 500px; display: flex; gap: 8px; margin-bottom: 15px;
-        }
+        .gold-abilities { width: 100%; max-width: 500px; display: flex; gap: 8px; margin-bottom: 15px; }
         .gold-btn {
-            flex: 1; background: linear-gradient(180deg, #3c2a1a 0%, #201308 100%);
-            color: var(--gold-bright); border: 1px solid #8a6a3b; padding: 8px 0;
-            border-radius: 4px; cursor: pointer; font-family: inherit; font-weight: bold;
-            font-size: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.5); transition: all 0.2s;
+            flex: 1; background: linear-gradient(180deg, #3c2a1a 0%, #201308 100%); color: var(--gold-bright); border: 1px solid #8a6a3b; padding: 8px 0;
+            border-radius: 4px; cursor: pointer; font-family: inherit; font-weight: bold; font-size: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.5); transition: all 0.2s;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
         .gold-btn:hover:not(:disabled) { background: #4a3622; border-color: var(--gold-bright); }
@@ -89,183 +82,89 @@
         .gold-btn:disabled { filter: grayscale(1) opacity(0.5); cursor: not-allowed; }
         .gold-btn span { font-size: 10px; color: #fff; margin-top: 2px; }
 
-        @keyframes pulse-btn { 0%, 100% { box-shadow: 0 0 5px rgba(139,195,74,0.5); } 50% { box-shadow: 0 0 15px rgba(139,195,74,1); } }
+        @keyframes pulse-btn { 0%, 100% { box-shadow: 0 0 3px rgba(139,195,74,0.5); } 50% { box-shadow: 0 0 10px rgba(139,195,74,1); } }
+
+        .btn-restart-top { background: var(--btn-bg); color: var(--gold); border: 1px solid var(--gold); padding: 8px 30px; border-radius: 4px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.5); font-size: 14px; margin-bottom: 15px; }
 
         /* Game Board */
         .game-wrapper { position: relative; width: 100%; max-width: 500px; }
         .game-container {
-            position: relative; width: 100%; aspect-ratio: 1 / 1;
-            background: var(--grid-bg); border-radius: 8px;
-            border: 3px solid #362a30; padding: 2%;
-            box-shadow: inset 0 0 30px rgba(0,0,0,0.9), 0 10px 30px rgba(0,0,0,0.8);
-            transition: box-shadow 0.3s;
+            position: relative; width: 100%; aspect-ratio: 1 / 1; background: var(--grid-bg); border-radius: 8px;
+            border: 3px solid #362a30; padding: 2%; box-shadow: inset 0 0 30px rgba(0,0,0,0.9), 0 10px 30px rgba(0,0,0,0.8); transition: box-shadow 0.3s;
         }
-        .grid-background {
-            display: grid; grid-template-columns: repeat(5, 1fr);
-            grid-template-rows: repeat(5, 1fr); gap: 2%; width: 100%; height: 100%;
-        }
+        .grid-background { display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(5, 1fr); gap: 2%; width: 100%; height: 100%; }
         .grid-cell { background: var(--cell-bg); border-radius: 4px; box-shadow: inset 0 0 8px rgba(0,0,0,0.8); }
-
         .tile-container { position: absolute; top: 2%; left: 2%; right: 2%; bottom: 2%; pointer-events: none; }
         .tile { position: absolute; width: 18.4%; height: 18.4%; transition: transform 0.15s ease-in-out; z-index: 10; }
         .tile-inner {
-            width: 100%; height: 100%; border-radius: 6px;
-            display: flex; justify-content: center; align-items: center;
-            position: relative; animation: appear 0.2s forwards;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.6); overflow: hidden;
+            width: 100%; height: 100%; border-radius: 6px; display: flex; justify-content: center; align-items: center;
+            position: relative; animation: appear 0.2s forwards; box-shadow: 0 4px 8px rgba(0,0,0,0.6); overflow: hidden;
             border: 2px solid #333; background-color: var(--panel-bg);
         }
         .tile.merged .tile-inner { animation: pop 0.2s forwards; }
 
         /* VFX Animations */
-        @keyframes shatter {
-            0% { transform: scale(1); opacity: 1; filter: brightness(1) sepia(0); }
-            50% { transform: scale(1.3); opacity: 0.8; filter: brightness(2) sepia(1) hue-rotate(-50deg) saturate(500%); }
-            100% { transform: scale(0); opacity: 0; filter: brightness(0); }
-        }
+        @keyframes shatter { 0% { transform: scale(1); opacity: 1; filter: brightness(1) sepia(0); } 50% { transform: scale(1.3); opacity: 0.8; filter: brightness(2) sepia(1) hue-rotate(-50deg) saturate(500%); } 100% { transform: scale(0); opacity: 0; filter: brightness(0); } }
         .tile.destroyed .tile-inner { animation: shatter 0.3s forwards !important; border-color: #ff0000 !important; }
-
-        @keyframes crit-pop {
-            0% { transform: scale(0.8); box-shadow: 0 0 0px var(--gold-bright); }
-            50% { transform: scale(1.3); box-shadow: 0 0 40px var(--gold-bright); z-index: 100;}
-            100% { transform: scale(1); box-shadow: 0 0 10px var(--gold-bright); }
-        }
+        @keyframes crit-pop { 0% { transform: scale(0.8); box-shadow: 0 0 0px var(--gold-bright); } 50% { transform: scale(1.3); box-shadow: 0 0 40px var(--gold-bright); z-index: 100;} 100% { transform: scale(1); box-shadow: 0 0 10px var(--gold-bright); } }
         .tile.crit .tile-inner { animation: crit-pop 0.6s forwards !important; border-color: var(--gold-bright) !important; }
-
         .tile.shuffle-anim .tile-inner { animation: shuffle-vfx 0.4s ease-in-out forwards !important; }
-        @keyframes shuffle-vfx {
-            0% { transform: scale(1) rotate(0deg); opacity: 1; }
-            50% { transform: scale(0.6) rotate(180deg); opacity: 0.7; filter: blur(1px); }
-            100% { transform: scale(1) rotate(360deg); opacity: 1; }
-        }
-
+        @keyframes shuffle-vfx { 0% { transform: scale(1) rotate(0deg); opacity: 1; } 50% { transform: scale(0.6) rotate(180deg); opacity: 0.7; filter: blur(1px); } 100% { transform: scale(1) rotate(360deg); opacity: 1; } }
         .tile.swap-anim .tile-inner { animation: swap-vfx 0.5s ease-in-out forwards !important; border-color: #00bcd4 !important; }
-        @keyframes swap-vfx {
-            0% { box-shadow: 0 0 0 #00bcd4; }
-            50% { box-shadow: 0 0 30px #00bcd4, 0 0 10px #fff; transform: scale(1.15) rotate(5deg); }
-            100% { box-shadow: 0 0 0 #00bcd4; }
-        }
-
+        @keyframes swap-vfx { 0% { box-shadow: 0 0 0 #00bcd4; } 50% { box-shadow: 0 0 30px #00bcd4, 0 0 10px #fff; transform: scale(1.15) rotate(5deg); } 100% { box-shadow: 0 0 0 #00bcd4; } }
         .tile.vampire-up .tile-inner { animation: vamp-up-vfx 0.6s forwards !important; border-color: #b71c1c !important; }
-        @keyframes vamp-up-vfx {
-            0% { box-shadow: 0 0 0 #b71c1c; }
-            50% { box-shadow: 0 0 40px #b71c1c, 0 0 20px #ff0000; transform: scale(1.25); z-index: 100; }
-            100% { box-shadow: 0 0 10px #b71c1c; }
-        }
-
+        @keyframes vamp-up-vfx { 0% { box-shadow: 0 0 0 #b71c1c; } 50% { box-shadow: 0 0 40px #b71c1c, 0 0 20px #ff0000; transform: scale(1.25); z-index: 100; } 100% { box-shadow: 0 0 10px #b71c1c; } }
         .tile.fire-upgrade .tile-inner { animation: fire-up 0.6s forwards !important; border-color: #ff9800 !important; }
-        @keyframes fire-up {
-            0% { transform: scale(0.8); box-shadow: 0 0 0px #ff9800; }
-            50% { transform: scale(1.3); box-shadow: 0 0 40px #ff0000; z-index: 100; filter: saturate(200%); }
-            100% { transform: scale(1); box-shadow: 0 0 10px #ff9800; }
-        }
+        @keyframes fire-up { 0% { transform: scale(0.8); box-shadow: 0 0 0px #ff9800; } 50% { transform: scale(1.3); box-shadow: 0 0 40px #ff0000; z-index: 100; filter: saturate(200%); } 100% { transform: scale(1); box-shadow: 0 0 10px #ff9800; } }
 
-        .floating-text {
-            position: absolute; font-weight: bold; font-size: 18px;
-            pointer-events: none; z-index: 200; animation: float-up 1s forwards;
-            text-shadow: 0 2px 4px #000; transform: translate(-50%, -50%);
-            white-space: nowrap;
-        }
-        @keyframes float-up {
-            0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -200%) scale(1.5); }
-        }
+        .floating-text { position: absolute; font-weight: bold; font-size: 16px; pointer-events: none; z-index: 200; animation: float-up 1s forwards; text-shadow: 0 2px 4px #000; transform: translate(-50%, -50%); white-space: nowrap; }
+        @keyframes float-up { 0% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -200%) scale(1.5); } }
 
         /* Targeting Mode */
         .game-container.targeting .tile-container { pointer-events: auto; }
         .game-container.targeting .tile { cursor: crosshair; pointer-events: auto; transition: opacity 0.2s; }
         .game-container.targeting .tile:hover .tile-inner { border-color: var(--gold-bright); box-shadow: 0 0 20px var(--gold-bright); transform: scale(1.05); }
         #targeting-banner {
-            position: absolute; top: -30px; left: 50%; transform: translateX(-50%);
-            background: var(--gold-bright); color: #000; padding: 5px 20px;
-            border-radius: 15px; z-index: 200; font-weight: bold; font-size: 14px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.8); pointer-events: none; display: none;
+            position: absolute; top: -30px; left: 50%; transform: translateX(-50%); background: var(--gold-bright); color: #000; padding: 5px 20px;
+            border-radius: 15px; z-index: 200; font-weight: bold; font-size: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.8); pointer-events: none; display: none;
             white-space: nowrap; animation: float-bounce 2s infinite;
         }
         @keyframes float-bounce { 0%,100%{top:-30px;} 50%{top:-35px;} }
 
-        /* 冰冻状态特效 */
-        .tile.frozen .tile-inner {
-            border-color: #00bcd4 !important;
-            box-shadow: inset 0 0 15px rgba(0, 188, 212, 0.8), 0 0 10px rgba(0, 188, 212, 0.5) !important;
-            background-color: rgba(0, 50, 80, 0.8) !important;
-        }
+        /* 冰冻状态 */
+        .tile.frozen .tile-inner { border-color: #00bcd4 !important; box-shadow: inset 0 0 15px rgba(0, 188, 212, 0.8), 0 0 10px rgba(0, 188, 212, 0.5) !important; background-color: rgba(0, 50, 80, 0.8) !important; }
         .tile.frozen::after { content: '❄️'; position: absolute; top: -8px; right: -8px; font-size: 20px; z-index: 20; animation: pulse-frozen 2s infinite; }
         @keyframes pulse-frozen { 0%,100%{transform:scale(1);} 50%{transform:scale(1.2);} }
-
         @keyframes appear { 0% { opacity: 0; transform: scale(0.5); } 100% { opacity: 1; transform: scale(1); } }
         @keyframes pop { 0% { transform: scale(0.8); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
 
         .tile-val { position: absolute; top: 2px; left: 4px; font-size: 12px; font-weight: bold; color: rgba(255,255,255,0.85); text-shadow: 1px 1px 0 #000; z-index: 2; }
         .tile-img { width: 85%; height: 85%; image-rendering: pixelated; z-index: 1; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.85)); }
 
-        .t-2 { border-color: #5d4037; background: linear-gradient(135deg, #3e2723, #151515); }
-        .t-4 { border-color: #8d6e63; background: linear-gradient(135deg, #4e342e, #151515); }
-        .t-8 { border-color: #558b2f; background: linear-gradient(135deg, #33691e, #111); }
-        .t-16 { border-color: #0288d1; background: linear-gradient(135deg, #01579b, #111); }
-        .t-32 { border-color: #6a1b9a; background: linear-gradient(135deg, #4a148c, #111); }
-        .t-64 { border-color: #e64a19; background: linear-gradient(135deg, #bf360c, #111); }
-        .t-128, .t-256 { border-color: #8e24aa; background: linear-gradient(135deg, #311b92, #000); box-shadow: 0 0 10px rgba(142,36,170,0.5); }
-        .t-512, .t-1024 { border-color: #e53935; background: linear-gradient(135deg, #b71c1c, #000); box-shadow: 0 0 15px rgba(229,57,53,0.6); }
-        .t-2048, .t-4096 { border-color: #43a047; background: linear-gradient(135deg, #1b5e20, #000); box-shadow: 0 0 20px rgba(67,160,71,0.7); }
-        .t-8192, .t-16384 { border-color: #ffb300; background: linear-gradient(135deg, #f57f17, #000); box-shadow: 0 0 25px rgba(255,179,0,0.8); }
-        .t-32768, .t-65536 { border-color: #d50000; background: linear-gradient(135deg, #880e4f, #000); box-shadow: 0 0 35px rgba(213,0,0,0.9); }
-        .t-131072, .t-262144 { border-color: #e0e0e0; background: linear-gradient(135deg, #ffffff, #424242); box-shadow: 0 0 40px #fff; }
-        .t-524288, .t-1048576 { border-color: #ff00ff; background: linear-gradient(135deg, #4a148c, #000); box-shadow: 0 0 50px #ff00ff; animation: pulse 2s infinite; }
-        .t-2097152 { border-color: #ffd700; background: linear-gradient(135deg, #ffd700, #ff0000, #000); box-shadow: 0 0 70px #ffd700; animation: pulse-epic 1.5s infinite; }
+        .t-2 { border-color: #5d4037; background: linear-gradient(135deg, #3e2723, #151515); } .t-4 { border-color: #8d6e63; background: linear-gradient(135deg, #4e342e, #151515); } .t-8 { border-color: #558b2f; background: linear-gradient(135deg, #33691e, #111); } .t-16 { border-color: #0288d1; background: linear-gradient(135deg, #01579b, #111); } .t-32 { border-color: #6a1b9a; background: linear-gradient(135deg, #4a148c, #111); } .t-64 { border-color: #e64a19; background: linear-gradient(135deg, #bf360c, #111); }
+        .t-128, .t-256 { border-color: #8e24aa; background: linear-gradient(135deg, #311b92, #000); box-shadow: 0 0 10px rgba(142,36,170,0.5); } .t-512, .t-1024 { border-color: #e53935; background: linear-gradient(135deg, #b71c1c, #000); box-shadow: 0 0 15px rgba(229,57,53,0.6); } .t-2048, .t-4096 { border-color: #43a047; background: linear-gradient(135deg, #1b5e20, #000); box-shadow: 0 0 20px rgba(67,160,71,0.7); } .t-8192, .t-16384 { border-color: #ffb300; background: linear-gradient(135deg, #f57f17, #000); box-shadow: 0 0 25px rgba(255,179,0,0.8); } .t-32768, .t-65536 { border-color: #d50000; background: linear-gradient(135deg, #880e4f, #000); box-shadow: 0 0 35px rgba(213,0,0,0.9); } .t-131072, .t-262144 { border-color: #e0e0e0; background: linear-gradient(135deg, #ffffff, #424242); box-shadow: 0 0 40px #fff; } .t-524288, .t-1048576 { border-color: #ff00ff; background: linear-gradient(135deg, #4a148c, #000); box-shadow: 0 0 50px #ff00ff; animation: pulse 2s infinite; } .t-2097152 { border-color: #ffd700; background: linear-gradient(135deg, #ffd700, #ff0000, #000); box-shadow: 0 0 70px #ffd700; animation: pulse-epic 1.5s infinite; }
 
         /* Bestiary Book */
-        .bestiary-section {
-            width: 100%; max-width: 600px; margin-top: 30px;
-            background: #1f1b1e; border: 2px solid #483a42; border-radius: 8px;
-            padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-        }
+        .bestiary-section { width: 100%; max-width: 600px; margin-top: 30px; background: #1f1b1e; border: 2px solid #483a42; border-radius: 8px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
         .bestiary-title { color: var(--gold); text-align: center; margin-bottom: 5px; font-size: 20px; }
         .bestiary-subtitle { text-align: center; font-size: 12px; color: var(--text-muted); margin-bottom: 20px; border-bottom: 1px dashed #483a42; padding-bottom: 10px;}
-        
         .bestiary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
-        .book-entry {
-            background: #2a2228; border: 2px solid #483a42; border-radius: 6px;
-            padding: 10px; text-align: center; display: flex; flex-direction: column; align-items: center;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.5); cursor: pointer; transition: all 0.2s; position: relative;
-        }
+        .book-entry { background: #2a2228; border: 2px solid #483a42; border-radius: 6px; padding: 10px; text-align: center; display: flex; flex-direction: column; align-items: center; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); cursor: pointer; transition: all 0.2s; position: relative; }
         .book-entry:hover:not(.locked) { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.8); border-color: var(--gold); }
         .book-entry.locked { filter: grayscale(100%) brightness(0.2); border-color: #111; cursor: not-allowed; }
         .book-entry.locked .entry-img { filter: contrast(0) brightness(0); }
-        
         .book-entry.equipped { border-color: var(--gold-bright); background: #3a2c28; box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); }
-        .book-entry.equipped::after {
-            content: "已装备"; position: absolute; top: -10px; right: -10px;
-            background: var(--gold-bright); color: #000; font-size: 10px; font-weight: bold;
-            padding: 2px 6px; border-radius: 4px; border: 1px solid #000; z-index: 5;
-        }
+        .book-entry.equipped::after { content: "已装备"; position: absolute; top: -10px; right: -10px; background: var(--gold-bright); color: #000; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; border: 1px solid #000; z-index: 5; }
 
-        .entry-img {
-            width: 64px; height: 64px; image-rendering: pixelated; margin-bottom: 8px;
-            background: #110e0f; border-radius: 4px; padding: 4px; border: 1px solid #000;
-        }
+        .entry-img { width: 64px; height: 64px; image-rendering: pixelated; margin-bottom: 8px; background: #110e0f; border-radius: 4px; padding: 4px; border: 1px solid #000; }
         .entry-name { font-size: 14px; font-weight: bold; color: var(--gold); margin-bottom: 4px; }
         .entry-ability { font-size: 10px; color: #a5d6a7; line-height: 1.3; background: rgba(0,0,0,0.3); padding: 4px; border-radius: 4px; width: 100%; border: 1px dashed #558b2f;}
 
-        .message-overlay {
-            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(5,5,5,0.95); display: flex; flex-direction: column;
-            justify-content: center; align-items: center; z-index: 500;
-            border-radius: 8px; opacity: 0; pointer-events: none; transition: opacity 0.3s;
-        }
+        .message-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(5,5,5,0.95); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 500; border-radius: 8px; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
         .message-overlay.active { opacity: 1; pointer-events: all; }
         .message-overlay h2 { font-size: 36px; color: var(--gold); margin-bottom: 10px; text-shadow: 0 0 15px #ff0000; text-align: center; }
-        
-        .btn-restart-top {
-            background: var(--btn-bg); color: var(--gold); border: 1px solid var(--gold);
-            padding: 8px 30px; border-radius: 4px; cursor: pointer; font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.5); font-size: 14px; margin-bottom: 15px;
-        }
 
-        @media (max-width: 600px) {
-            .bestiary-grid { grid-template-columns: repeat(2, 1fr); }
-            .entry-img { width: 50px; height: 50px; }
-        }
+        @media (max-width: 600px) { .bestiary-grid { grid-template-columns: repeat(2, 1fr); } .entry-img { width: 50px; height: 50px; } }
     </style>
 </head>
 <body>
@@ -273,7 +172,7 @@
     <header>
         <div class="title-area">
             <h1>DnD 2048</h1>
-            <p>能力觉醒：流金岁月</p>
+            <p>连携觉醒：魔物统御</p>
         </div>
         <div class="stats-area">
             <div class="stat-box"><span>Score</span><strong id="score">0</strong></div>
@@ -282,18 +181,13 @@
         </div>
     </header>
 
-    <button class="btn-restart-top" id="btn-restart">↻ 重新试炼</button>
+    <button class="btn-restart-top" id="btn-restart">↻ 重新试炼（装卸能力将在此刻生效）</button>
 
-    <div class="ability-panel">
-        <div class="ability-info">
-            <div class="ability-icon" id="panel-ab-icon"></div>
-            <div class="ability-text">
-                <div class="ability-name" id="panel-ab-name">未选择能力</div>
-                <div class="ability-desc" id="panel-ab-desc">在下方图鉴点击魔物以在下局装备</div>
-            </div>
-        </div>
-        <button id="btn-use-ability" class="btn-use-ability" disabled>被动生效</button>
-    </div>
+    <!-- Synergies Panel (Moved to top) -->
+    <div class="synergies-container" id="synergies-container"></div>
+
+    <!-- Multi-Slot Panel -->
+    <div class="slots-container" id="slots-container"></div>
 
     <!-- Gold Abilities -->
     <div class="gold-abilities">
@@ -316,7 +210,7 @@
 
     <div class="bestiary-section">
         <h2 class="bestiary-title">🗡️ 冒险者魔物指南</h2>
-        <div class="bestiary-subtitle">随着合成将逐步解锁新魔物。点击已解锁的卡片在下局装备</div>
+        <div class="bestiary-subtitle" id="book-tip">点击卡片装备。某些组合将触发隐藏连携！</div>
         <div class="bestiary-grid" id="bestiary-grid"></div>
     </div>
 
@@ -327,13 +221,13 @@ const MONSTERS = {
     2: { name: "洞穴鼠", pixels: [ "................", "................", "................", "................", "................", ".......FF.......", "......EEEE......", ".....EEEEEF.....", "....G4EEEF......", "...GEEEEEE...FF.", "..GEE.EE.EF.F..F", "...E...E...F....", "...0...0........", "................", "................", "................" ],
         ability: { name: '生存本能', type: 'passive', cd: 0, desc: '大幅提高洞穴鼠出现的概率' } },
     4: { name: "狗头人", pixels: [ "................", "................", "................", "......55........", ".....5445.......", "....54145..2....", ".....5555..2....", ".....5555..2....", "....G5555G.2....", "...0.5555.02....", ".....5555..2....", ".....5..5..2....", "....55..55.2....", "....00..00.0....", "................", "................" ],
-        ability: { name: '伏击', type: 'active', cd: 40, desc: '摧毁一个魔物，前提是其附近存在狗头人。根据附近狗头人数量升级附近的狗头人。' } },
+        ability: { name: '伏击', type: 'active', cd: 40, desc: '摧毁一个魔物(需附近有狗头人)。依据附近狗头人数量升级附近的狗头人。' } },
     8: { name: "哥布林", pixels: [ "................", "................", ".......8........", "...8..888..8....", "...88.818.88....", "....8888888.....", "......888.......", ".....G888G.2....", "....0.888.02....", "......888..2....", "......8.8..2....", ".....88.88.0....", ".....00.00......", "................", "................", "................" ],
         ability: { name: '剔除弱者', type: 'active', cd: 40, desc: '摧毁场上指定哥布林邻近的所有洞穴鼠或狗头人' } },
     16: { name: "冰魔蝠", pixels: [ "................", "................", ".H........H.....", "..HH....HH......", "...H.HH.H.......", "...H.A1.H.......", "..HA.AA.AH......", "...HAAAAH.......", ".....AA.........", "....AAAA........", "...AA..AA.......", "..0A....A0......", "................", "................", "................", "................" ],
         ability: { name: '寒气凝结', type: 'active', cd: 20, desc: '场上有冰魔蝠时，可以冻结一个指定魔物 5 回合' } },
     32: { name: "食尸鬼", pixels: [ "................", "................", "......33........", ".....3333.......", "....3413........", "....344333......", ".....333333.....", "....3333333.....", "...33...333.....", "..33......33....", "..0.......033...", "...........0....", "................", "................", "................", "................" ],
-        ability: { name: '同类相食', type: 'active', cd: 30, desc: '指定一个食尸鬼吞噬附近所有食尸鬼，吞噬1/2/3/4个分别升级为食人魔/燃焰之颅/美杜莎/云巨人' } },
+        ability: { name: '同类相食', type: 'active', cd: 30, desc: '指定一食尸鬼吞噬附近同类，依据吞噬数量(1~4)依次升为移位兽/火元素/夺心魔/青足龙蛇' } },
     64: { name: "食人魔", pixels: [ "................", "......GG........", ".....G0GG.......", ".....GGGG.......", "...GGGGGGGG.....", "..G..GGGG..F....", ".0...GGGG..F....", ".....GGGG..F....", ".....EEEE..F....", ".....EEEEE.F....", ".....GG.GG.F....", "....GG...GG0....", "....0.....0.....", "................", "................", "................" ],
         ability: { name: '贪婪', type: 'passive', cd: 0, desc: '当局结束获得额外10%金币。每合成四个食人魔获得1金币。' } },
     128: { name: "移位兽", pixels: [ "...C........C...", "...C........C...", "...CC......CC...", "....C......C....", ".....00DD00.....", "...0D0DDD0D0....", "...04DDDDDD0....", "...0DDDDDDDD0...", "....0DDDDDD0....", "....D.D.D.DD....", "...0D.0.0.0D....", "...0......0.....", "................", "................", "................", "................" ],
@@ -341,11 +235,11 @@ const MONSTERS = {
     256: { name: "燃焰之颅", pixels: [ "................", "......88........", "....889988......", "...89933998.....", "...893030398....", "...893343398....", "....89300398....", ".....893398.....", "......8888......", ".......88.......", "................", "................", "................", "................", "................", "................" ],
         ability: { name: '火球术', type: 'active', cd: 90, desc: '场上有燃焰之颅时，随机摧毁 5 个 128 级及以下的魔物' } },
     512: { name: "火元素", pixels: [ "................", ".......4........", "......464.......", ".....46764......", "....4677764.....", "...467161764....", "...467777764....", "...467777764....", "...466777664....", "....4466644.....", "....4.444.4.....", "...4.......4....", "................", "................", "................", "................" ],
-        ability: { name: '元素火种', type: 'passive', cd: 0, desc: '合成出的燃焰之颅有概率直接升为火元素。场上每有一个火元素，所有合成获得额外100%积分，可叠加。' } },
+        ability: { name: '元素火种', type: 'passive', cd: 0, desc: '合成燃焰之颅有概率直接升为火元素。场上每有一火元素，所有合成额外获得100%积分。' } },
     1024: { name: "美杜莎", pixels: [ "................", "......88........", ".....8888.......", "....88G888......", "....8G8G88......", "...88GGG88..E...", "...8.GGG.8..E...", ".....GGG....E...", ".....AAA....E...", "....A.A.A.E.E...", "...A..A..AE.E...", "...0..A..A0.0...", ".....G.G........", ".....0.0........", "................", "................" ],
         ability: { name: '石化凝视', type: 'active', cd: 20, desc: '场上有美杜莎时，冻结场上指定的 4 个魔物 4 回合' } },
     2048: { name: "夺心魔", pixels: [ "................", "......CC........", ".....CCCC.......", "....CC1CCC......", "....CCCCCC......", ".....C.CC.......", "....C..C.C......", "....D..D..D.....", "...DDDDDDDD.....", "..DDD.DD.DDD....", "..D.D.DD.D.D....", ".D..D.DD.D..D...", ".0..D.DD.D..0...", "....0.00.0......", "................", "................" ],
-        ability: { name: '异能激荡', type: 'passive', cd: 0, desc: '合成时有概率暴击。5%产物直升2级，2%产物直升3级。' } },
+        ability: { name: '异能激荡', type: 'passive', cd: 0, desc: '合成时有概率暴击。5%直升2级，2%直升3级' } },
     4096: { name: "多头蛇", pixels: [ "................", "....9....9......", "...949..949.....", "....9....9..9...", ".....9..9..949..", "...9..999...9...", "..949..9....9...", "...9...99999....", ".......99999....", "......9999999...", "......9999999...", "......99...99...", ".....99.....99..", ".....0.......0..", "................", "................" ],
         ability: { name: '多重乱斩', type: 'passive', cd: 0, desc: '每次移动，随机分配场上所有魔物的位置' } },
     8192: { name: "云巨人", pixels: [ "................", "......HA........", ".....HHHA.......", ".....H0HA.......", ".....HHHH.......", "...1.AAAA.2.....", "..111AAAA222....", "..1A1AAAA2A2....", "...A.AAAA.A.....", ".....AAAA.......", ".....A..A.......", "....AA..AA......", "....AA..AA......", "....00..00......", "................", "................" ],
@@ -357,70 +251,92 @@ const MONSTERS = {
     65536: { name: "吸血鬼", pixels: [ "................", "......33........", ".....3413.......", "....443344......", "...44033044.....", "...04000040.....", "...00000000.....", "...00000000.....", "...000..000.....", "...0.0..0.0.....", "..0..0..0..0....", "..0..0..0..0....", "..0..0..0..0....", "..0..0..0..0....", "................", "................" ],
         ability: { name: '生命汲取', type: 'active', cd: 90, desc: '随机摧毁 1 个非最高级魔物，随机升级 1 个非最高级魔物' } },
     131072: { name: "眼魔", pixels: [ "................", "...8.8..8.8.....", "..8...88...8....", "...8.EEEE.8.....", "..8EE1111EE8....", "..EEE1441EEE....", ".EEEE1441EEEE...", ".EEEE1111EEEE...", ".EEEEEEEEEEEE...", "..EEEE00EEEE....", "...EEEEEEEE.....", "....EEEEEE......", "................", "................", "................", "................" ],
-        ability: { name: '解离射线', type: 'passive', cd: 10, desc: '充能满10次后，自动随机摧毁场上一个非最高级魔物。' } },
+        ability: { name: '解离射线', type: 'passive', cd: 10, desc: '充能满自动释放：随机摧毁场上一个非最高级魔物。' } },
     262144: { name: "银龙", pixels: [ "................", "........33......", ".......3333.....", "......313333....", "...22..3333..22.", "..2222.3333.2222", ".223222333322232", "2233322333322333", "22....233332....", "2......3333.....", "........33......", ".......3..3.....", "......33..33....", "......0....0....", "................", "................" ],
         ability: { name: '正义祝福', type: 'passive', cd: 0, desc: '合成时有 10% 概率暴击（直升 2 级），并立即获得 1 金币' } },
     524288: { name: "巫妖", pixels: [ "................", "......77........", ".....7337.......", "....73A3A7......", ".....3333.......", "....C3333C......", "...CCCDDCCC.....", "...C.CDDC.C.....", "..C..CDDC..C....", "..0..CDDC..0....", ".....CDDC.......", ".....C..C.......", "....CC..CC......", "....00..00......", "................", "................" ],
         ability: { name: '命匣存储', type: 'passive', cd: 0, desc: '限一次：绝境时消灭非最高级魔物续命并重置金币价格。合成巫妖时重置次数' } },
     1048576: { name: "泰拉斯奎", pixels: [ "................", ".......555......", "......55555.....", ".....5555555....", "....5F5F5F5F5...", "...55F5F5F5F55..", "...5GGGGGGGG5...", "..5G1G1GGGGGG5..", "..5GGGGGGGGGG5..", "..55G0GG00G055..", "...5G..GG..G5...", "...0....0...0...", "................", "................", "................", "................" ],
-        ability: { name: '末日吞噬', type: 'active', cd: 100, desc: '摧毁所有比当前最高级魔物等级低的魔物，获得相当于摧毁数量三倍的金币' } },
+        ability: { name: '末日吞噬', type: 'active', cd: 100, desc: '摧毁所有比最高级等级低的魔物，获得摧毁数量三倍的金币' } },
     2097152: { name: "提亚马特", pixels: [ "...3........A...", "..343..0...A4A..", "...3..040...A...", ".......0........", ".4...........8..", "444..55555..848.", ".4..5555555..8..", "....5555555.....", "...555...555....", "..5555...5555...", "..555.....555...", "..55.......55...", "..0.........0...", "................", "................", "................" ],
         ability: { name: '神圣干涉', type: 'passive', cd: 0, desc: '当场上有提亚马特时，填满提亚马特宣告终结胜利' } }
 };
+
+const SYNERGIES = [
+    { req: [2, 4, 8], name: "💥 地穴战争", type: "add", replace: [], desc: "每当【伏击】或【剔除弱者】摧毁洞穴鼠，将场上所有洞穴鼠升级为狗头人。" },
+    { req: [2, 32768], name: "⚡ 雷霆鼠疫", type: "replace", replace: [2, 32768], desc: "新生成魔物 100% 为洞穴鼠，且两洞穴鼠将直接合成为哥布林。" },
+    { req: [2, 4], name: "🕳️ 地穴伏兵", type: "add", replace: [], desc: "【伏击】摧毁的魔物是洞穴鼠时，狗头人恢复10点充能。" },
+    { req: [4, 8], name: "⚔️ 巢穴清剿", type: "add", replace: [], desc: "【伏击】摧毁哥布林：哥布林+10充能。【剔除弱者】摧毁狗头人：狗头人+10充能。" },
+    { req: [2, 8], name: "🦠 弱肉繁殖", type: "add", replace: [], desc: "【剔除弱者】每摧毁1个洞穴鼠，在其位置生成1个哥布林。" },
+    { req: [4, 128], name: "🌀 包抄幻袭", type: "add", replace: [], desc: "【幻象移位】后若目标邻接狗头人，狗头人+10充能。本回合【伏击】判定数量+1。" },
+    { req: [8, 64], name: "💰 战利品分赃", type: "add", replace: [], desc: "【剔除弱者】每摧毁 2 个魔物获得 1 金币 (单局上限100)。" },
+    { req: [16, 131072], name: "🧊 冰晶解离", type: "add", replace: [], desc: "眼魔的【解离射线】优先攻击被冻结的目标。" },
+    { req: [32, 65536], name: "🩸 血宴转生", type: "add", replace: [], desc: "【同类相食】吞噬≥2食尸鬼时：产物额外升1级，并恢复吸血鬼30点充能。" },
+    { req: [32, 64], name: "🍖 腐宴贪食", type: "add", replace: [], desc: "【同类相食】每吞噬1个食尸鬼得1G。若产物≥512，食人魔合成计数+1。" },
+    { req: [256, 512], name: "💥 爆燃核心", type: "add", replace: [], desc: "【火球术】摧毁数量提升至 7。若摧毁≥5，下次合出燃焰之颅必升为火元素。" },
+    { req: [512, 1024], name: "🌋 熔火琉璃", type: "add", replace: [], desc: "被冻结目标被摧毁时：额外获其一半分数，25%生成燃焰之颅。" },
+    { req: [8192, 262144], name: "📜 圣堂税契", type: "add", replace: [], desc: "所有因暴击获得的金币数量翻倍。" },
+    { req: [2048, 262144], name: "✨ 圣痕异能", type: "replace", replace: [2048, 262144], desc: "暴击并得 1G。10%直升2级，3%直升3级，1%直升4级。" },
+    { req: [64, 8192], name: "🏦 巨胃金库", type: "replace", replace: [64, 8192], desc: "结束得额外40%金币。每合出3个食人魔得1G，合出云巨人得25G。" },
+    { req: [16384, 32768], name: "👁️ 古神孵化", type: "add", replace: [], desc: "【远古低语】发动后：接下来 3 次新生成只会出现冰魔蝠(16)。" },
+    { req: [524288, 1048576], name: "🔄 终焉轮回", type: "add", replace: [], desc: "【末日吞噬】若一次摧毁≥24只：重置巫妖已耗尽的续命命匣。" }
+];
 
 function generateSVG(val) {
     let pixels = MONSTERS[val]?.pixels;
     if(!pixels) return '';
     let rects = '';
-    for(let y=0; y<16; y++) {
-        for(let x=0; x<16; x++) {
-            let char = pixels[y][x];
-            if(char && char !== '.') rects += `<rect x="${x}" y="${y}" width="1" height="1" fill="${P[char]}" />`;
-        }
-    }
+    for(let y=0; y<16; y++) for(let x=0; x<16; x++) if(pixels[y][x] && pixels[y][x] !== '.') rects += `<rect x="${x}" y="${y}" width="1" height="1" fill="${P[pixels[y][x]]}" />`;
     return `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" class="tile-img">${rects}</svg>`;
 }
 
-// 数据迁移系统（无缝保留您的历史记录）
+// ---------------- 数据系统 (自动迁移) ----------------
 function migrateLegacyData() {
-    const vars = ['Gold', 'Best', 'Unlocked', 'Equipped', 'GameState'];
-    const suffixes = ['_v10', '_v9', '_v8', '_v7'];
+    const vars = ['Gold', 'Best', 'Unlocked', 'EquippedArr', 'UnlockedSlots', 'GameState'];
+    const suffixes = ['_v13', '_v12', '_v11', '_v10', '_v9', '_v8', '_v7', ''];
     vars.forEach(v => {
-        let currentKey = `dnd2048${v}`;
+        let currentKey = `dnd2048${v}_vFinal`;
         if (localStorage.getItem(currentKey) === null) {
             for (let suffix of suffixes) {
-                let old = localStorage.getItem(`${currentKey}${suffix}`);
-                if (old !== null) { localStorage.setItem(currentKey, old); break; }
+                let old = localStorage.getItem(`dnd2048${v}${suffix}`);
+                if (old !== null) { 
+                    localStorage.setItem(currentKey, old); 
+                    break; 
+                }
             }
         }
     });
 }
 migrateLegacyData();
 
-// ---------------- 游戏引擎 ----------------
 const SIZE = 5;
 let board = [];
 let tilesMap = {};
 let score = 0;
-let bestScore = localStorage.getItem('dnd2048Best') || 0;
-let totalGold = parseInt(localStorage.getItem('dnd2048Gold')) || 0;
+let bestScore = localStorage.getItem('dnd2048Best_vFinal') || 0;
+let totalGold = parseInt(localStorage.getItem('dnd2048Gold_vFinal')) || 0;
 let history = []; 
-let unlocked = JSON.parse(localStorage.getItem('dnd2048Unlocked')) || [2, 4]; 
 
 let nextTileId = 1;
 let isAnimating = false;
-
-// 瞄准系统
 let isTargetingMode = false;
 let targetingConfig = null; 
+let targetingAbilityId = null;
 
-// 能力状态
-let equippedAbilityId = localStorage.getItem('dnd2048Equipped') || null; 
-let currentAbilityId = null;  
-let abilityCharge = 0;
+let unlockedSlots = parseInt(localStorage.getItem('dnd2048UnlockedSlots_vFinal')) || 1; 
+let unlocked = JSON.parse(localStorage.getItem('dnd2048Unlocked_vFinal')) || [2, 4];
+let equippedAbilities = JSON.parse(localStorage.getItem('dnd2048EquippedArr_vFinal')) || [null, null, null];
+let currentAbilities = [null, null, null]; 
+let abilityCharges = {};
+
+// 状态缓存（不受时光倒流影响）
 let lichUsed = false;
 let ogreMergeCount = 0;
 let goldCosts = { kill: 2, rewind: 2, swap: 2 };
+let goblinSynergyGold = 0;
+let abolethSpawnsLeft = 0;
+let guaranteedFireElemental = false;
+let ambushBonusCount = 0;
 
 const scoreEl = document.getElementById('score');
 const bestEl = document.getElementById('best');
@@ -430,40 +346,38 @@ const bestiaryGrid = document.getElementById('bestiary-grid');
 const overlay = document.getElementById('message-overlay');
 const msgText = document.getElementById('msg-text');
 const gameContainer = document.getElementById('game-container');
-const btnUseAbility = document.getElementById('btn-use-ability');
 const targetingBanner = document.getElementById('targeting-banner');
+const slotsContainer = document.getElementById('slots-container');
+const synergiesContainer = document.getElementById('synergies-container');
 
 function saveGameData() {
     const gameState = {
         board: board, score: score, nextTileId: nextTileId, history: history,
-        currentAbilityId: currentAbilityId, abilityCharge: abilityCharge, 
-        lichUsed: lichUsed, goldCosts: goldCosts, ogreMergeCount: ogreMergeCount
+        currentAbilities: currentAbilities, abilityCharges: abilityCharges, 
+        lichUsed: lichUsed, goldCosts: goldCosts, ogreMergeCount: ogreMergeCount,
+        goblinSynergyGold: goblinSynergyGold, abolethSpawnsLeft: abolethSpawnsLeft, 
+        guaranteedFireElemental: guaranteedFireElemental, ambushBonusCount: ambushBonusCount
     };
-    localStorage.setItem('dnd2048GameState', JSON.stringify(gameState));
+    localStorage.setItem('dnd2048GameState_vFinal', JSON.stringify(gameState));
 }
 
 function initGame(forceRestart = false) {
     let savedState = null;
-    if (!forceRestart) {
-        try { savedState = JSON.parse(localStorage.getItem('dnd2048GameState')); } catch(e) {}
-    }
+    if (!forceRestart) { try { savedState = JSON.parse(localStorage.getItem('dnd2048GameState_vFinal')); } catch(e) {} }
 
     if (savedState && savedState.board) {
-        board = savedState.board;
-        score = savedState.score || 0;
-        history = savedState.history || [];
-        nextTileId = savedState.nextTileId || 1;
-        currentAbilityId = savedState.currentAbilityId || null;
-        abilityCharge = savedState.abilityCharge || 0;
-        lichUsed = savedState.lichUsed || false;
-        ogreMergeCount = savedState.ogreMergeCount || 0;
+        board = savedState.board; score = savedState.score || 0; history = savedState.history || [];
+        nextTileId = savedState.nextTileId || 1; currentAbilities = savedState.currentAbilities || [...equippedAbilities];
+        abilityCharges = savedState.abilityCharges || {}; lichUsed = savedState.lichUsed || false; ogreMergeCount = savedState.ogreMergeCount || 0;
         goldCosts = savedState.goldCosts || { kill: 2, rewind: 2, swap: 2 };
+        goblinSynergyGold = savedState.goblinSynergyGold || 0; abolethSpawnsLeft = savedState.abolethSpawnsLeft || 0; 
+        guaranteedFireElemental = savedState.guaranteedFireElemental || false; ambushBonusCount = savedState.ambushBonusCount || 0;
     } else {
         board = Array(SIZE).fill().map(() => Array(SIZE).fill(null));
-        score = 0; nextTileId = 1; history = [];
-        currentAbilityId = equippedAbilityId;
-        abilityCharge = 0; lichUsed = false; ogreMergeCount = 0;
-        goldCosts = { kill: 2, rewind: 2, swap: 2 };
+        score = 0; nextTileId = 1; history = []; currentAbilities = [...equippedAbilities];
+        abilityCharges = {}; lichUsed = false; ogreMergeCount = 0;
+        goldCosts = { kill: 2, rewind: 2, swap: 2 }; goblinSynergyGold = 0; abolethSpawnsLeft = 0; 
+        guaranteedFireElemental = false; ambushBonusCount = 0;
     }
 
     tilesMap = {}; tileContainer.innerHTML = '';
@@ -471,47 +385,41 @@ function initGame(forceRestart = false) {
     isAnimating = false; cancelTargeting();
     
     const gridBg = document.getElementById('grid-bg');
-    if(gridBg.children.length === 0) {
-        for(let i=0; i<SIZE*SIZE; i++) {
-            let cell = document.createElement('div'); cell.className = 'grid-cell'; gridBg.appendChild(cell);
-        }
-    }
+    if(gridBg.children.length === 0) { for(let i=0; i<SIZE*SIZE; i++) { let cell = document.createElement('div'); cell.className = 'grid-cell'; gridBg.appendChild(cell); } }
 
     if (savedState && savedState.board) {
-        for(let y=0; y<SIZE; y++) {
-            for(let x=0; x<SIZE; x++) {
-                if(board[y][x]) createTileDOM(board[y][x].id, board[y][x].val, x, y);
-            }
-        }
+        for(let y=0; y<SIZE; y++) for(let x=0; x<SIZE; x++) if(board[y][x]) createTileDOM(board[y][x].id, board[y][x].val, x, y);
         updateFreezeUI();
     } else {
         addRandomTile(); addRandomTile(); saveGameData();
     }
 
-    renderBestiary();
-    updateAbilityUI();
+    renderBestiary(); updateSlotsUI();
+}
+
+function getActiveSynergies(baseAbilities) {
+    return SYNERGIES.filter(syn => syn.req.every(id => baseAbilities.includes(id)));
+}
+function hasActiveSynergy(name) { return getActiveSynergies(currentAbilities).some(s => s.name.includes(name)); }
+function isAbilityReplaced(id) {
+    let activeSyns = getActiveSynergies(currentAbilities);
+    return activeSyns.some(s => s.type === "replace" && s.replace.includes(id));
+}
+function hasActiveAbility(id) { return currentAbilities.includes(id); }
+
+function deductGold(amount) {
+    totalGold -= amount; localStorage.setItem('dnd2048Gold_vFinal', totalGold); uiGold.innerText = totalGold;
 }
 
 function updateScore(add) {
     score += add; scoreEl.innerText = score;
-    if (score > bestScore) {
-        bestScore = score; bestEl.innerText = bestScore;
-        localStorage.setItem('dnd2048Best', bestScore);
-    }
+    if (score > bestScore) { bestScore = score; bestEl.innerText = bestScore; localStorage.setItem('dnd2048Best_vFinal', bestScore); }
 }
 
 function getEmptyCells(currentBoard) {
     let cells = [];
     for (let y = 0; y < SIZE; y++) for (let x = 0; x < SIZE; x++) if (!currentBoard[y][x]) cells.push({x, y});
     return cells;
-}
-
-function checkUnlock(val) {
-    if (!unlocked.includes(val) && MONSTERS[val]) {
-        unlocked.push(val);
-        localStorage.setItem('dnd2048Unlocked', JSON.stringify(unlocked));
-        renderBestiary();
-    }
 }
 
 function hasAdjacent(x, y, val) {
@@ -528,10 +436,19 @@ function addRandomTile() {
     if (emptyCells.length > 0) {
         let pos = emptyCells[Math.floor(Math.random() * emptyCells.length)];
         let r = Math.random();
-        let val = r < 0.9 ? 2 : 4;
-        
-        if (currentAbilityId == 2) val = r < 0.9 ? 2 : 4; 
-        if (currentAbilityId == 32768) val = r < 0.333 ? 4 : (r < 0.666 ? 8 : 16);
+        let val = r < 0.7 ? 2 : 4; 
+
+        if (abolethSpawnsLeft > 0) {
+            val = 16; abolethSpawnsLeft--;
+        } else if (hasActiveSynergy("雷霆鼠疫")) {
+            val = 2; // 100% 洞穴鼠
+        } else {
+            if (!isAbilityReplaced(32768) && hasActiveAbility(32768)) {
+                val = r < 0.333 ? 4 : (r < 0.666 ? 8 : 16);
+            } else if (!isAbilityReplaced(2) && hasActiveAbility(2)) {
+                val = r < 0.9 ? 2 : 4;
+            }
+        }
 
         let id = nextTileId++;
         board[pos.y][pos.x] = { id, val, frozen: 0 };
@@ -540,18 +457,17 @@ function addRandomTile() {
 }
 
 function showFloatingVFX(x, y, text, color = "var(--gold-bright)") {
-    let el = document.createElement('div');
-    el.className = 'floating-text';
-    el.innerText = text;
-    el.style.color = color;
-    el.style.left = `calc(${x * 20.4 + 9.2}%)`;
-    el.style.top = `calc(${y * 20.4 + 9.2}%)`;
-    tileContainer.appendChild(el);
+    let el = document.createElement('div'); el.className = 'floating-text'; el.innerText = text; el.style.color = color;
+    el.style.left = `calc(${x * 20.4 + 9.2}%)`; el.style.top = `calc(${y * 20.4 + 9.2}%)`; tileContainer.appendChild(el);
     setTimeout(() => { if(el.parentNode) el.parentNode.removeChild(el); }, 1000);
 }
 
 function createTileDOM(id, val, x, y, isMerge = false, isCrit = false, isFireUp = false, isVampUp = false) {
-    checkUnlock(val); 
+    if (!unlocked.includes(val) && MONSTERS[val]) {
+        unlocked.push(val);
+        localStorage.setItem('dnd2048Unlocked_vFinal', JSON.stringify(unlocked));
+        renderBestiary();
+    }
     
     let el = document.createElement('div'); el.className = 'tile';
     if(isCrit) el.classList.add('crit');
@@ -562,22 +478,13 @@ function createTileDOM(id, val, x, y, isMerge = false, isCrit = false, isFireUp 
     inner.innerHTML = `<div class="tile-val">${val}</div>${generateSVG(val)}`;
     el.appendChild(inner);
     
-    if (isCrit) {
-        let ft = document.createElement('div'); ft.className = 'floating-text'; ft.innerText = 'CRIT!';
-        ft.style.left = "50%"; ft.style.top = "50%";
-        el.appendChild(ft);
-    }
-    if (isFireUp) {
-        let ft = document.createElement('div'); ft.className = 'floating-text'; ft.innerText = '🔥火元觉醒';
-        ft.style.left = "50%"; ft.style.top = "50%"; ft.style.color = "#ff9800";
-        el.appendChild(ft);
-    }
+    if (isCrit) { let ft = document.createElement('div'); ft.className = 'floating-text'; ft.innerText = 'CRIT!'; ft.style.left = "50%"; ft.style.top = "50%"; el.appendChild(ft); }
+    if (isFireUp) { let ft = document.createElement('div'); ft.className = 'floating-text'; ft.innerText = '🔥火元觉醒'; ft.style.left = "50%"; ft.style.top = "50%"; ft.style.color = "#ff9800"; el.appendChild(ft); }
 
     el.style.transform = `translate(${x * 111}%, ${y * 111}%)`;
     if(isMerge && !isCrit && !isFireUp && !isVampUp) el.classList.add('merged');
     
-    tileContainer.appendChild(el);
-    tilesMap[id] = { el, x, y, val };
+    tileContainer.appendChild(el); tilesMap[id] = { el, x, y, val };
 }
 
 function removeTileDOM(id, playVfx = false) {
@@ -585,27 +492,59 @@ function removeTileDOM(id, playVfx = false) {
     if (tile && tile.el.parentNode) {
         if (playVfx) {
             tile.el.classList.add('destroyed');
-            setTimeout(() => {
-                if (tile.el.parentNode) tile.el.parentNode.removeChild(tile.el);
-                delete tilesMap[id];
-            }, 300);
-        } else {
-            tile.el.parentNode.removeChild(tile.el);
-            delete tilesMap[id];
+            setTimeout(() => { if (tile.el.parentNode) tile.el.parentNode.removeChild(tile.el); delete tilesMap[id]; }, 300);
+        } else { tile.el.parentNode.removeChild(tile.el); delete tilesMap[id]; }
+    }
+}
+
+function destroyTileAt(x, y, isVfx = true) {
+    let cell = board[y][x];
+    if (!cell) return null;
+    let val = cell.val; let isFrozen = cell.frozen > 0; let id = cell.id;
+
+    board[y][x] = null; removeTileDOM(id, isVfx);
+
+    if (isFrozen && hasActiveSynergy("熔火琉璃")) {
+        let scoreBonus = Math.floor(val / 2);
+        updateScore(scoreBonus);
+        if (Math.random() < 0.25) {
+            let emptyCells = getEmptyCells(board);
+            if (emptyCells.length > 0) {
+                let pos = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+                let newId = nextTileId++; board[pos.y][pos.x] = { id: newId, val: 256, frozen: 0 };
+                setTimeout(()=> { createTileDOM(newId, 256, pos.x, pos.y, false, false, true); }, 50); 
+            }
+        }
+        showFloatingVFX(x, y, `+${scoreBonus}分`, "#ff9800");
+    }
+    return { val, id };
+}
+
+function upgradeAllRats() {
+    let upgraded = false;
+    for(let y=0; y<SIZE; y++) {
+        for(let x=0; x<SIZE; x++) {
+            if (board[y][x] && board[y][x].val === 2) {
+                removeTileDOM(board[y][x].id, false);
+                let newId = nextTileId++;
+                board[y][x] = {id: newId, val: 4, frozen: 0};
+                createTileDOM(newId, 4, x, y, false, false, true); 
+                upgraded = true;
+            }
         }
     }
+    if(upgraded) showFloatingVFX(2, 2, "地穴战争爆发！", "#f44336");
 }
 
 function saveState() {
     let bCopy = board.map(row => row.map(c => c ? { ...c } : null)); 
-    history.push({ board: bCopy, score: score, nextTileId: nextTileId, abilityCharge: abilityCharge, lichUsed: lichUsed, goldCosts: {...goldCosts}, ogreMergeCount: ogreMergeCount });
+    history.push({ board: bCopy, score: score, nextTileId: nextTileId }); // 时光倒流只保存棋盘和分数
     if (history.length > 50) history.shift();
 }
 
 function updateFreezeUI() {
     for(let id in tilesMap) {
-        let t = tilesMap[id];
-        let cell = board[t.y][t.x];
+        let t = tilesMap[id]; let cell = board[t.y][t.x];
         if (cell && cell.frozen > 0) t.el.classList.add('frozen');
         else t.el.classList.remove('frozen');
     }
@@ -621,442 +560,387 @@ function playAbilityVFX() {
 }
 
 // ---- 通用目标选择系统 ----
-function startTargeting(prompt, validFn, count, onComplete) {
-    isTargetingMode = true;
-    targetingConfig = { prompt, validFn, count, targets: [], onComplete };
-    gameContainer.classList.add('targeting');
-    targetingBanner.style.display = 'block';
-    updateTargetingBanner();
+function startTargeting(abilityId, prompt, validFn, count, onComplete) {
+    isTargetingMode = true; targetingAbilityId = abilityId; targetingConfig = { prompt, validFn, count, targets: [], onComplete };
+    gameContainer.classList.add('targeting'); targetingBanner.style.display = 'block'; updateTargetingBanner();
 }
-
 function cancelTargeting() {
-    isTargetingMode = false; targetingConfig = null;
-    gameContainer.classList.remove('targeting');
-    targetingBanner.style.display = 'none';
-    document.querySelectorAll('.tile').forEach(el => el.style.opacity = 1);
-    updateAbilityUI();
+    isTargetingMode = false; targetingConfig = null; targetingAbilityId = null;
+    gameContainer.classList.remove('targeting'); targetingBanner.style.display = 'none';
+    document.querySelectorAll('.tile').forEach(el => el.style.opacity = 1); updateSlotsUI();
 }
-
 function updateTargetingBanner() {
     if (!isTargetingMode) return;
-    if (targetingConfig.count > 1) {
-        targetingBanner.innerText = `${targetingConfig.prompt} (${targetingConfig.targets.length}/${targetingConfig.count})`;
-    } else {
-        targetingBanner.innerText = targetingConfig.prompt;
-    }
+    if (targetingConfig.count > 1) targetingBanner.innerText = `${targetingConfig.prompt} (${targetingConfig.targets.length}/${targetingConfig.count})`;
+    else targetingBanner.innerText = targetingConfig.prompt;
 }
-
 gameContainer.addEventListener('click', (e) => {
     if (!isTargetingMode || !targetingConfig) return;
     let targetEl = e.target.closest('.tile');
     if (targetEl) {
         let t = Object.values(tilesMap).find(m => m.el === targetEl);
-        if (t) {
-            let cell = board[t.y][t.x];
-            if (cell && targetingConfig.validFn(cell, t.x, t.y) && !targetingConfig.targets.some(m=>m.x===t.x&&m.y===t.y)) {
-                targetingConfig.targets.push({x: t.x, y: t.y, cell: cell});
-                t.el.style.opacity = 0.4;
-                updateTargetingBanner();
-
-                if (targetingConfig.targets.length >= targetingConfig.count) {
-                    let onComplete = targetingConfig.onComplete;
-                    let targets = targetingConfig.targets;
-                    cancelTargeting();
-                    onComplete(targets);
-                }
+        if (t && board[t.y][t.x] && targetingConfig.validFn(board[t.y][t.x], t.x, t.y) && !targetingConfig.targets.some(m=>m.x===t.x&&m.y===t.y)) {
+            targetingConfig.targets.push({x: t.x, y: t.y, cell: board[t.y][t.x]});
+            t.el.style.opacity = 0.4; updateTargetingBanner();
+            if (targetingConfig.targets.length >= targetingConfig.count) {
+                let onComplete = targetingConfig.onComplete; let targets = targetingConfig.targets;
+                cancelTargeting(); onComplete(targets);
             }
         }
     }
 });
 
-
 // ---- 金币能力逻辑 ----
-function deductGold(amount) {
-    totalGold -= amount;
-    localStorage.setItem('dnd2048Gold', totalGold);
-    uiGold.innerText = totalGold;
-}
-
 document.getElementById('btn-g-kill').addEventListener('click', () => {
     if (isTargetingMode) { cancelTargeting(); return; }
-    let cost = goldCosts.kill;
-    if (totalGold < cost) return;
-    
+    let cost = goldCosts.kill; if (totalGold < cost) return;
     if (!board.flat().some(c => c && c.val < 16384)) return;
 
-    startTargeting("律令死亡：选择低于底栖魔鱼的魔物", c => c.val < 16384, 1, targets => {
-        deductGold(cost);
-        goldCosts.kill = Math.min(100, goldCosts.kill * 2);
-        let tgt = targets[0];
-        let id = board[tgt.y][tgt.x].id;
-        board[tgt.y][tgt.x] = null;
-        removeTileDOM(id, true);
-        playAbilityVFX(); updateAbilityUI(); saveState(); saveGameData();
+    startTargeting("gold_kill", "律令死亡：选择低于底栖魔鱼的魔物", c => c.val < 16384, 1, targets => {
+        deductGold(cost); goldCosts.kill = Math.min(100, goldCosts.kill * 2);
+        let tgt = targets[0]; 
+        destroyTileAt(tgt.x, tgt.y, true);
+        playAbilityVFX(); updateSlotsUI(); saveState(); saveGameData();
     });
 });
 
 document.getElementById('btn-g-rewind').addEventListener('click', () => {
     if (isTargetingMode) cancelTargeting();
-    let cost = goldCosts.rewind;
-    if (totalGold < cost || history.length === 0) return;
+    let cost = goldCosts.rewind; if (totalGold < cost || history.length === 0) return;
     
-    deductGold(cost);
+    deductGold(cost); goldCosts.rewind = Math.min(100, goldCosts.rewind * 2); 
     
-    // **核心修改点**：计算本次时光倒流后，其下次的新花费，并缓存当前所有的金币能力花费、能力状态。
-    let nextRewindCost = Math.min(100, goldCosts.rewind * 2);
-    let currentGoldCosts = {...goldCosts};
-    currentGoldCosts.rewind = nextRewindCost; // 应用翻倍
-    
-    // 缓存当前不会受到时间影响的能力机制与系统状态
-    let currentAbilityCharge = abilityCharge;
-    let currentLichUsed = lichUsed;
-    let currentOgreMergeCount = ogreMergeCount;
-
-    let goBack = Math.min(10, history.length);
-    let state;
+    let goBack = Math.min(10, history.length); let state;
     for(let i=0; i<goBack; i++) state = history.pop();
 
-    // 只恢复盘面和分数相关数据
     board = state.board.map(row => row.map(c => c ? { ...c } : null));
     score = state.score; nextTileId = state.nextTileId;
     
-    // 维持时光倒流前的各项被动充能状态与金币价格
-    abilityCharge = currentAbilityCharge;
-    lichUsed = currentLichUsed;
-    ogreMergeCount = currentOgreMergeCount;
-    goldCosts = currentGoldCosts; 
-    
-    scoreEl.innerText = score;
-    tileContainer.innerHTML = ''; tilesMap = {};
+    scoreEl.innerText = score; tileContainer.innerHTML = ''; tilesMap = {};
     for(let y=0; y<SIZE; y++) for(let x=0; x<SIZE; x++) if(board[y][x]) createTileDOM(board[y][x].id, board[y][x].val, x, y);
-    
-    playAbilityVFX(); updateFreezeUI(); updateAbilityUI(); saveGameData();
+    playAbilityVFX(); updateFreezeUI(); updateSlotsUI(); saveGameData();
 });
 
 document.getElementById('btn-g-swap').addEventListener('click', () => {
     if (isTargetingMode) { cancelTargeting(); return; }
-    let cost = goldCosts.swap;
-    if (totalGold < cost) return;
-    
+    let cost = goldCosts.swap; if (totalGold < cost) return;
     if (board.flat().filter(c=>c).length < 2) return;
 
-    startTargeting("移形换影：指定两个魔物进行交换", c => true, 2, targets => {
-        deductGold(cost);
-        goldCosts.swap = Math.min(100, goldCosts.swap * 2);
-        
+    startTargeting("gold_swap", "移形换影：指定两个魔物进行交换", c => true, 2, targets => {
+        deductGold(cost); goldCosts.swap = Math.min(100, goldCosts.swap * 2);
         let p1 = targets[0], p2 = targets[1];
-        let t1 = board[p1.y][p1.x], t2 = board[p2.y][p2.x];
-        board[p1.y][p1.x] = t2; board[p2.y][p2.x] = t1;
+        let t1 = board[p1.y][p1.x], t2 = board[p2.y][p2.x]; board[p1.y][p1.x] = t2; board[p2.y][p2.x] = t1;
         
-        let tile1 = tilesMap[t1.id];
-        let tile2 = tilesMap[t2.id];
+        let tile1 = tilesMap[t1.id], tile2 = tilesMap[t2.id];
+        tile1.x = p2.x; tile1.y = p2.y; tile2.x = p1.x; tile2.y = p1.y;
+        tile1.el.style.transform = `translate(${tile1.x * 111}%, ${tile1.y * 111}%)`; tile2.el.style.transform = `translate(${tile2.x * 111}%, ${tile2.y * 111}%)`;
+        tile1.el.classList.add('swap-anim'); tile2.el.classList.add('swap-anim'); tile1.el.style.zIndex = 50; tile2.el.style.zIndex = 50;
         
-        tile1.x = p2.x; tile1.y = p2.y;
-        tile2.x = p1.x; tile2.y = p1.y;
-        
-        tile1.el.style.transform = `translate(${tile1.x * 111}%, ${tile1.y * 111}%)`;
-        tile2.el.style.transform = `translate(${tile2.x * 111}%, ${tile2.y * 111}%)`;
-        
-        tile1.el.classList.add('swap-anim'); tile2.el.classList.add('swap-anim');
-        tile1.el.style.zIndex = 50; tile2.el.style.zIndex = 50;
-        
-        setTimeout(() => {
-            tile1.el.classList.remove('swap-anim'); tile2.el.classList.remove('swap-anim');
-            tile1.el.style.zIndex = 10; tile2.el.style.zIndex = 10;
-        }, 500);
-        
-        updateFreezeUI(); updateAbilityUI(); saveState(); saveGameData();
+        setTimeout(() => { tile1.el.classList.remove('swap-anim'); tile2.el.classList.remove('swap-anim'); tile1.el.style.zIndex = 10; tile2.el.style.zIndex = 10; }, 500);
+        updateFreezeUI(); updateSlotsUI(); saveState(); saveGameData();
     });
 });
 
 
 // ---- 魔物主动能力行为函数 ----
+function triggerActiveAbility(id) {
+    if (isTargetingMode && targetingAbilityId == id) { cancelTargeting(); return; }
+    if (isTargetingMode) cancelTargeting();
+    let m = MONSTERS[id]; let charge = abilityCharges[id] || 0;
+    if (charge < m.ability.cd) return;
 
-function abilityDestroyCond(condFunc, maxCount = 999, isVfx = true) {
-    let cells = [];
-    for(let y=0;y<SIZE;y++) for(let x=0;x<SIZE;x++) if(board[y][x] && condFunc(board[y][x].val)) cells.push({x,y, id: board[y][x].id});
-    if(cells.length === 0) return 0;
-    cells.sort(() => Math.random() - 0.5);
-    let count = 0;
-    for(let i=0; i<Math.min(maxCount, cells.length); i++) {
-        let p = cells[i]; board[p.y][p.x] = null; removeTileDOM(p.id, isVfx); count++;
-    }
-    return count;
-}
-
-function abilityUpgradeCondMultiple(condFunc, count) {
-    let cells = [];
-    for(let y=0;y<SIZE;y++) for(let x=0;x<SIZE;x++) if(board[y][x] && condFunc(board[y][x].val)) cells.push({x,y, id: board[y][x].id, val: board[y][x].val});
-    if(cells.length === 0) return false;
-    cells.sort(() => Math.random() - 0.5);
-    let upgraded = 0;
-    for(let i=0; i<Math.min(count, cells.length); i++) {
-        let p = cells[i]; removeTileDOM(p.id, false);
-        let newVal = p.val * 2; let newId = nextTileId++;
-        board[p.y][p.x] = {id: newId, val: newVal, frozen: 0}; createTileDOM(newId, newVal, p.x, p.y);
-        upgraded++;
-    }
-    return upgraded > 0;
-}
-
-function abilityShuffle(isPassive = false) {
-    let coords = []; let tiles = [];
-    for(let y=0;y<SIZE;y++)for(let x=0;x<SIZE;x++){
-        if(board[y][x]) { coords.push({x,y}); tiles.push(board[y][x]); }
-    }
-    if(tiles.length === 0) return false;
-
-    for (let i = tiles.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
-    }
-
-    for(let i=0; i<coords.length; i++) {
-        let p = coords[i]; let t = tiles[i]; board[p.y][p.x] = t;
-        let tileObj = tilesMap[t.id];
-        tileObj.x = p.x; tileObj.y = p.y;
-        tileObj.el.style.transform = `translate(${p.x * 111}%, ${p.y * 111}%)`;
-        if(!isPassive) tileObj.el.classList.add('shuffle-anim');
-    }
-
-    if(!isPassive) {
-        setTimeout(() => { document.querySelectorAll('.shuffle-anim').forEach(el => el.classList.remove('shuffle-anim')); }, 500);
-    }
-    updateFreezeUI();
-    return true;
-}
-
-function abilityVampire() {
-    let maxVal = Math.max(...board.flat().filter(c=>c).map(c=>c.val));
-    let validTargets = [];
-    for(let y=0;y<SIZE;y++) for(let x=0;x<SIZE;x++) if(board[y][x] && board[y][x].val < maxVal) validTargets.push({x,y, id: board[y][x].id, val: board[y][x].val});
-    if (validTargets.length === 0) return false;
-    
-    validTargets.sort(() => Math.random() - 0.5);
-    let destroyTarget = validTargets.pop();
-    board[destroyTarget.y][destroyTarget.x] = null; removeTileDOM(destroyTarget.id, true);
-    
-    if (validTargets.length > 0) {
-        let upTarget = validTargets.pop();
-        removeTileDOM(upTarget.id, false);
-        let newId = nextTileId++;
-        board[upTarget.y][upTarget.x] = {id: newId, val: upTarget.val * 2, frozen: 0};
-        createTileDOM(newId, upTarget.val * 2, upTarget.x, upTarget.y, false, false, false, true);
-    }
-    return true;
-}
-
-// 主动技能按钮逻辑
-btnUseAbility.addEventListener('click', () => {
-    if (!currentAbilityId || isAnimating) return;
-    if (isTargetingMode) { cancelTargeting(); return; }
-
-    let m = MONSTERS[currentAbilityId];
-    if (m.ability.type !== 'active' || abilityCharge < m.ability.cd) return;
-
-    // --- 瞄准类主动技能 ---
-    if (currentAbilityId == 4) {
-        let validCount = 0;
-        for(let y=0;y<SIZE;y++)for(let x=0;x<SIZE;x++){ if(board[y][x] && hasAdjacent(x,y,4)>0) validCount++; }
+    if (id == 4) {
+        let validCount = 0; for(let y=0;y<SIZE;y++)for(let x=0;x<SIZE;x++){ if(board[y][x] && hasAdjacent(x,y,4)>0) validCount++; }
         if (validCount === 0) return; 
-        startTargeting("伏击：选择狗头人附近的一个魔物", (c, x, y) => hasAdjacent(x, y, 4) > 0, 1, tgts => {
+        startTargeting(4, "伏击：选择狗头人附近的一个魔物", (c, x, y) => hasAdjacent(x, y, 4) > 0, 1, tgts => {
             let tgt = tgts[0]; let kobolds = [];
             [[0,1],[0,-1],[1,0],[-1,0]].forEach(d => {
                 let ny = tgt.y+d[0], nx = tgt.x+d[1];
                 if(ny>=0 && ny<SIZE && nx>=0 && nx<SIZE && board[ny][nx] && board[ny][nx].val === 4) kobolds.push({x:nx, y:ny, id: board[ny][nx].id});
             });
-            let kCount = kobolds.length;
-            let targetTiers = {1: 8, 2: 16, 3: 32, 4: 128};
-            let upgradeVal = targetTiers[kCount] || 128;
+            let kCount = kobolds.length; 
+            if (hasActiveSynergy("包抄幻袭") && ambushBonusCount > 0) { kCount = Math.min(4, kCount + 1); showFloatingVFX(tgt.x, tgt.y, "判定+1", "#f44336"); ambushBonusCount = 0; }
+            let targetTiers = {1: 8, 2: 16, 3: 32, 4: 128}; let upgradeVal = targetTiers[kCount] || 128;
+            
+            let targetVal = tgt.cell.val;
+            destroyTileAt(tgt.x, tgt.y, true);
 
-            board[tgt.y][tgt.x] = null; removeTileDOM(tgt.cell.id, true);
-            let newId1 = nextTileId++; board[tgt.y][tgt.x] = {id: newId1, val: 4, frozen: 0};
-            createTileDOM(newId1, 4, tgt.x, tgt.y);
+            let newId1 = nextTileId++; board[tgt.y][tgt.x] = {id: newId1, val: 4, frozen: 0}; createTileDOM(newId1, 4, tgt.x, tgt.y);
+            kobolds.forEach(k => { destroyTileAt(k.x, k.y, false); let newId = nextTileId++; board[k.y][k.x] = {id: newId, val: upgradeVal, frozen: 0}; createTileDOM(newId, upgradeVal, k.x, k.y, false, false, true); });
+            executeAbilityFinish(4);
 
-            kobolds.forEach(k => {
-                removeTileDOM(k.id, false);
-                let newId = nextTileId++; board[k.y][k.x] = {id: newId, val: upgradeVal, frozen: 0};
-                createTileDOM(newId, upgradeVal, k.x, k.y, false, false, true); 
-            });
-            executeAbilityFinish();
+            if (hasActiveSynergy("地穴伏兵") && targetVal === 2) {
+                abilityCharges[4] = Math.min(MONSTERS[4].ability.cd, (abilityCharges[4] || 0) + 10);
+                showFloatingVFX(tgt.x, tgt.y, "+10充能", "#f44336");
+                updateSlotsUI(); saveGameData();
+            }
+            if (hasActiveSynergy("巢穴清剿") && targetVal === 8) {
+                abilityCharges[8] = Math.min(MONSTERS[8].ability.cd, (abilityCharges[8]||0) + 10);
+                showFloatingVFX(tgt.x, tgt.y, "哥布林+10充能", "#f44336");
+                updateSlotsUI(); saveGameData();
+            }
+            if (hasActiveSynergy("地穴战争") && targetVal === 2) {
+                setTimeout(() => upgradeAllRats(), 150);
+            }
         }); return;
     }
-    if (currentAbilityId == 8) {
+    if (id == 8) {
         if (!board.flat().some(c => c && c.val === 8)) return;
-        startTargeting("剔除弱者：选择1个哥布林", (c) => c.val === 8, 1, tgts => {
-            let k = tgts[0]; let adjs = [];
+        startTargeting(8, "剔除弱者：选择1个哥布林", (c) => c.val === 8, 1, tgts => {
+            let k = tgts[0]; let adjs = []; let destroyedRat = false;
             [[0,1],[0,-1],[1,0],[-1,0]].forEach(d => {
                 let ny = k.y+d[0], nx = k.x+d[1];
-                if(ny>=0 && ny<SIZE && nx>=0 && nx<SIZE && board[ny][nx]) {
-                    if (board[ny][nx].val === 2 || board[ny][nx].val === 4) adjs.push({x:nx, y:ny, id: board[ny][nx].id});
-                }
+                if(ny>=0 && ny<SIZE && nx>=0 && nx<SIZE && board[ny][nx]) { if (board[ny][nx].val === 2 || board[ny][nx].val === 4) adjs.push({x:nx, y:ny, id: board[ny][nx].id}); }
             });
-            if (adjs.length > 0) adjs.forEach(adj => { board[adj.y][adj.x] = null; removeTileDOM(adj.id, true); });
-            executeAbilityFinish();
+            if (adjs.length > 0) {
+                adjs.forEach(adj => { 
+                    let adjVal = board[adj.y][adj.x].val; destroyTileAt(adj.x, adj.y, true); 
+                    if (adjVal === 2) destroyedRat = true;
+                    if (hasActiveSynergy("弱肉繁殖") && adjVal === 2) {
+                        let newId = nextTileId++; board[adj.y][adj.x] = {id: newId, val: 8, frozen: 0};
+                        setTimeout(() => createTileDOM(newId, 8, adj.x, adj.y), 50);
+                    }
+                    if (hasActiveSynergy("巢穴清剿") && adjVal === 4) {
+                        abilityCharges[4] = Math.min(MONSTERS[4].ability.cd, (abilityCharges[4]||0) + 10);
+                        showFloatingVFX(adj.x, adj.y, "狗头人+10充能", "#f44336");
+                    }
+                });
+                if (hasActiveSynergy("战利品分赃") && goblinSynergyGold < 100) {
+                    let gain = Math.floor(adjs.length / 2); gain = Math.min(gain, 100 - goblinSynergyGold);
+                    if (gain > 0) { goblinSynergyGold += gain; deductGold(-gain); showFloatingVFX(k.x, k.y, `+${gain} G`, '#e040fb'); }
+                }
+                if (hasActiveSynergy("地穴战争") && destroyedRat) {
+                    setTimeout(() => upgradeAllRats(), 150);
+                }
+            }
+            executeAbilityFinish(8);
         }); return;
     }
-    if (currentAbilityId == 16) {
+    if (id == 16) {
         if (!board.flat().some(c => c && c.val === 16)) return;
         if (!board.flat().some(c => c && c.frozen <= 0)) return;
-        startTargeting("寒气凝结：选择1个魔物冻结", c => c.frozen <= 0, 1, tgts => {
-            board[tgts[0].y][tgts[0].x].frozen = 5; updateFreezeUI(); executeAbilityFinish();
-        }); return;
+        startTargeting(16, "寒气凝结：选择1个魔物冻结", c => c.frozen <= 0, 1, tgts => { board[tgts[0].y][tgts[0].x].frozen = 5; updateFreezeUI(); executeAbilityFinish(16); }); return;
     }
-    if (currentAbilityId == 32) {
-        let validCount = 0;
-        for(let y=0;y<SIZE;y++)for(let x=0;x<SIZE;x++){ if(board[y][x] && board[y][x].val === 32 && hasAdjacent(x,y,32)>0) validCount++; }
-        if (validCount === 0) return;
-        startTargeting("同类相食：选择要吞噬的食尸鬼", (c, x, y) => c.val === 32 && hasAdjacent(x,y,32)>0, 1, tgts => {
+    if (id == 32) {
+        if (!board.flat().some(c => c && c.val === 32)) return;
+        startTargeting(32, "同类相食：选择要吞噬的食尸鬼", (c, x, y) => c.val === 32, 1, tgts => {
             let tgt = tgts[0]; let ghouls = [];
             [[0,1],[0,-1],[1,0],[-1,0]].forEach(d => {
                 let ny = tgt.y+d[0], nx = tgt.x+d[1];
                 if(ny>=0 && ny<SIZE && nx>=0 && nx<SIZE && board[ny][nx] && board[ny][nx].val === 32) ghouls.push({x:nx, y:ny, id: board[ny][nx].id});
             });
-            let gCount = ghouls.length;
-            let targetTiers = {1: 64, 2: 256, 3: 1024, 4: 8192};
-            let upgradeVal = targetTiers[gCount] || 8192;
+            let gCount = ghouls.length; let targetTiers = {1: 128, 2: 512, 3: 2048, 4: 32768};
+            if(gCount > 0) {
+                let upgradeVal = targetTiers[gCount] || 32768;
+                if (hasActiveSynergy("血宴转生") && gCount >= 2) { upgradeVal *= 2; abilityCharges[65536] = Math.min(MONSTERS[65536].ability.cd, (abilityCharges[65536] || 0) + 30); showFloatingVFX(tgt.x, tgt.y, "血宴转生", "#b71c1c"); }
+                if (hasActiveSynergy("腐宴贪食")) { let gain = gCount; deductGold(-gain); showFloatingVFX(tgt.x, tgt.y, `+${gain} G`, "#ffd700"); if (upgradeVal >= 512) { ogreMergeCount++; if (ogreMergeCount >= 4) { ogreMergeCount = 0; deductGold(-1); } } }
 
-            board[tgt.y][tgt.x] = null; removeTileDOM(tgt.cell.id, true);
-            ghouls.forEach(g => { board[g.y][g.x] = null; removeTileDOM(g.id, true); });
+                destroyTileAt(tgt.x, tgt.y, true);
+                ghouls.forEach(g => { destroyTileAt(g.x, g.y, true); });
 
-            let newId1 = nextTileId++; board[tgt.y][tgt.x] = {id: newId1, val: upgradeVal, frozen: 0};
-            createTileDOM(newId1, upgradeVal, tgt.x, tgt.y, false, false, true);
-
-            executeAbilityFinish();
+                let newId1 = nextTileId++; board[tgt.y][tgt.x] = {id: newId1, val: upgradeVal, frozen: 0};
+                createTileDOM(newId1, upgradeVal, tgt.x, tgt.y, false, false, true); executeAbilityFinish(32);
+            } else { cancelTargeting(); }
         }); return;
     }
-    if (currentAbilityId == 128) {
+    if (id == 128) {
         if (!board.flat().some(c => c && c.val === 128)) return;
-        let validCount = 0;
-        for(let y=0;y<SIZE;y++)for(let x=0;x<SIZE;x++){ if(board[y][x] && hasAdjacent(x,y,128)>0) validCount++; }
-        if (validCount < 2) return; 
-        startTargeting("幻象移位：指定移位兽附近的两个魔物", (c, x, y) => hasAdjacent(x, y, 128) > 0, 2, targets => {
-            let p1 = targets[0], p2 = targets[1];
-            let t1 = board[p1.y][p1.x], t2 = board[p2.y][p2.x];
+        startTargeting(128, "幻象移位：指定任意两个魔物", c => true, 2, targets => {
+            let p1 = targets[0], p2 = targets[1]; let t1 = board[p1.y][p1.x], t2 = board[p2.y][p2.x];
             board[p1.y][p1.x] = t2; board[p2.y][p2.x] = t1;
+            let tile1 = tilesMap[t1.id], tile2 = tilesMap[t2.id]; tile1.x = p2.x; tile1.y = p2.y; tile2.x = p1.x; tile2.y = p1.y;
+            tile1.el.style.transform = `translate(${tile1.x * 111}%, ${tile1.y * 111}%)`; tile2.el.style.transform = `translate(${tile2.x * 111}%, ${tile2.y * 111}%)`;
+            tile1.el.classList.add('swap-anim'); tile2.el.classList.add('swap-anim'); tile1.el.style.zIndex = 50; tile2.el.style.zIndex = 50;
             
-            let tile1 = tilesMap[t1.id], tile2 = tilesMap[t2.id];
-            tile1.x = p2.x; tile1.y = p2.y; tile2.x = p1.x; tile2.y = p1.y;
-            tile1.el.style.transform = `translate(${tile1.x * 111}%, ${tile1.y * 111}%)`;
-            tile2.el.style.transform = `translate(${tile2.x * 111}%, ${tile2.y * 111}%)`;
-            tile1.el.classList.add('swap-anim'); tile2.el.classList.add('swap-anim');
-            tile1.el.style.zIndex = 50; tile2.el.style.zIndex = 50;
-            setTimeout(() => {
-                tile1.el.classList.remove('swap-anim'); tile2.el.classList.remove('swap-anim');
-                tile1.el.style.zIndex = 10; tile2.el.style.zIndex = 10;
-            }, 500);
-            updateFreezeUI(); executeAbilityFinish();
+            if (hasActiveSynergy("包抄幻袭")) {
+                if (hasAdjacent(p1.x, p1.y, 4) > 0 || hasAdjacent(p2.x, p2.y, 4) > 0) {
+                    abilityCharges[4] = Math.min(MONSTERS[4].ability.cd, (abilityCharges[4] || 0) + 10); ambushBonusCount = 1; showFloatingVFX(p1.x, p1.y, "包抄!", "#00bcd4");
+                }
+            }
+
+            setTimeout(() => { tile1.el.classList.remove('swap-anim'); tile2.el.classList.remove('swap-anim'); tile1.el.style.zIndex = 10; tile2.el.style.zIndex = 10; }, 500);
+            updateFreezeUI(); executeAbilityFinish(128);
         }); return;
     }
-    if (currentAbilityId == 1024) {
+    if (id == 1024) {
         if (!board.flat().some(c => c && c.val === 1024)) return;
-        let count = board.flat().filter(c => c && c.frozen <= 0).length;
-        if (count === 0) return;
-        startTargeting("石化凝视：冻结", c => c.frozen <= 0, Math.min(4, count), tgts => {
-            tgts.forEach(t => board[t.y][t.x].frozen = 4); updateFreezeUI(); executeAbilityFinish();
-        }); return;
+        let count = board.flat().filter(c => c && c.frozen <= 0).length; if (count === 0) return;
+        startTargeting(1024, "石化凝视：冻结4个目标", c => c.frozen <= 0, Math.min(4, count), tgts => { tgts.forEach(t => board[t.y][t.x].frozen = 4); updateFreezeUI(); executeAbilityFinish(1024); }); return;
     }
-    if (currentAbilityId == 16384) {
+    if (id == 16384) {
         if (!board.flat().some(c => c && c.val <= 8192)) return;
-        startTargeting("远古低语：选择不高于云巨人的魔物升级", c => c.val <= 8192, 1, tgts => {
-            let p = tgts[0]; removeTileDOM(board[p.y][p.x].id, false);
-            let newVal = p.cell.val * 2; let newId = nextTileId++;
-            board[p.y][p.x] = {id: newId, val: newVal, frozen: 0};
-            createTileDOM(newId, newVal, p.x, p.y); executeAbilityFinish();
+        startTargeting(16384, "远古低语：选择不高于云巨人的魔物升级", c => c.val <= 8192, 1, tgts => {
+            let p = tgts[0]; destroyTileAt(p.x, p.y, false);
+            let newVal = p.cell.val * 2; let newId = nextTileId++; board[p.y][p.x] = {id: newId, val: newVal, frozen: 0};
+            createTileDOM(newId, newVal, p.x, p.y); 
+            if (hasActiveSynergy("古神孵化")) { abolethSpawnsLeft = 3; showFloatingVFX(p.x, p.y, `👁️古神孵化中`, '#e040fb'); }
+            executeAbilityFinish(16384);
         }); return;
     }
 
-    // --- 瞬发类主动技能 ---
+    // --- 瞬发类 ---
     let success = false;
-    if (currentAbilityId == 256) {
-        if (board.flat().some(c => c && c.val === 256)) success = abilityDestroyCond(v => v <= 128, 5, true) > 0;
+    if (id == 256) {
+        if (board.flat().some(c => c && c.val === 256)) {
+            let maxTargets = hasActiveSynergy("爆燃核心") ? 7 : 5;
+            let cCount = abilityDestroyCond(v => v <= 128, maxTargets, true);
+            if (cCount > 0) success = true;
+            if (hasActiveSynergy("爆燃核心") && cCount >= 5) { guaranteedFireElemental = true; showFloatingVFX(2, 2, `🔥核心爆燃预热完毕`, '#e040fb'); }
+        }
     }
-    else if (currentAbilityId == 65536) success = abilityVampire();
-    else if (currentAbilityId == 1048576) {
+    else if (id == 65536) {
+        let maxVal = Math.max(...board.flat().filter(c=>c).map(c=>c.val)); let validTargets = [];
+        for(let y=0;y<SIZE;y++) for(let x=0;x<SIZE;x++) if(board[y][x] && board[y][x].val < maxVal) validTargets.push({x,y, id: board[y][x].id, val: board[y][x].val});
+        if (validTargets.length > 0) {
+            validTargets.sort(() => Math.random() - 0.5); let dt = validTargets.pop();
+            destroyTileAt(dt.x, dt.y, true);
+            if (validTargets.length > 0) {
+                let upTarget = validTargets.pop(); destroyTileAt(upTarget.x, upTarget.y, false); let newId = nextTileId++;
+                board[upTarget.y][upTarget.x] = {id: newId, val: upTarget.val * 2, frozen: 0}; createTileDOM(newId, upTarget.val * 2, upTarget.x, upTarget.y, false, false, false, true);
+            }
+            success = true;
+        }
+    }
+    else if (id == 1048576) {
         let maxVal = Math.max(...board.flat().filter(c=>c).map(c=>c.val));
         let count = abilityDestroyCond(v => v < maxVal, 999, true);
-        if (count > 0) { deductGold(-(count * 3)); showFloatingVFX(2, 2, `+${count*3} G`); success = true; }
+        if (count > 0) { 
+            deductGold(-(count * 3)); showFloatingVFX(2, 2, `+${count*3} G`); success = true; 
+            if (hasActiveSynergy("终焉轮回") && count >= 24 && lichUsed) { lichUsed = false; showFloatingVFX(2, 3, `💀轮回倒转，命匣重铸！`, '#e040fb'); }
+        }
     }
 
-    if (success) {
-        let skipGlobal = [65536].includes(currentAbilityId);
-        executeAbilityFinish(skipGlobal);
-    }
-});
-
-function executeAbilityFinish(skipGlobalVFX = false) {
-    if(!skipGlobalVFX) playAbilityVFX();
-    abilityCharge = 0; updateAbilityUI(); saveGameData();
+    if (success) executeAbilityFinish(id, id == 65536);
 }
 
-function updateAbilityUI() {
-    // Gold Abilities
-    document.getElementById('cost-kill').innerText = `${goldCosts.kill}G`;
-    document.getElementById('btn-g-kill').disabled = totalGold < goldCosts.kill;
-    document.getElementById('cost-rewind').innerText = `${goldCosts.rewind}G`;
-    document.getElementById('btn-g-rewind').disabled = totalGold < goldCosts.rewind || history.length === 0;
-    document.getElementById('cost-swap').innerText = `${goldCosts.swap}G`;
-    document.getElementById('btn-g-swap').disabled = totalGold < goldCosts.swap;
-
-    if (isTargetingMode) return; 
-
-    const icon = document.getElementById('panel-ab-icon'), name = document.getElementById('panel-ab-name'), desc = document.getElementById('panel-ab-desc');
-    if (currentAbilityId && MONSTERS[currentAbilityId]) {
-        let m = MONSTERS[currentAbilityId];
-        icon.innerHTML = generateSVG(currentAbilityId);
-        name.innerText = `${m.name} - ${m.ability.name}`;
-        desc.innerText = m.ability.desc;
-        if (m.ability.cd > 0) {
-            if (m.ability.type === 'active') {
-                if (abilityCharge >= m.ability.cd) {
-                    btnUseAbility.innerText = `发动技能！`; btnUseAbility.className = 'btn-use-ability ready'; btnUseAbility.disabled = false;
-                } else {
-                    btnUseAbility.innerText = `充能中 (${abilityCharge}/${m.ability.cd})`; btnUseAbility.className = 'btn-use-ability'; btnUseAbility.disabled = true;
-                }
-            } else {
-                btnUseAbility.innerText = `被动充能 (${abilityCharge}/${m.ability.cd})`; btnUseAbility.className = 'btn-use-ability'; btnUseAbility.disabled = true;
-            }
-        } else {
-            btnUseAbility.innerText = `被动生效中`; btnUseAbility.className = 'btn-use-ability'; btnUseAbility.disabled = true;
-        }
-    } else {
-        icon.innerHTML = ''; name.innerText = '未选择能力'; desc.innerText = '在下方图鉴点击魔物以在下局装备';
-        btnUseAbility.innerText = '无能力'; btnUseAbility.className = 'btn-use-ability'; btnUseAbility.disabled = true;
+function abilityDestroyCond(condFunc, maxCount = 999, isVfx = true) {
+    let cells = [];
+    for(let y=0;y<SIZE;y++) for(let x=0;x<SIZE;x++) if(board[y][x] && condFunc(board[y][x].val)) cells.push({x,y, id: board[y][x].id});
+    if(cells.length === 0) return 0; cells.sort(() => Math.random() - 0.5);
+    let count = 0;
+    for(let i=0; i<Math.min(maxCount, cells.length); i++) {
+        let p = cells[i]; destroyTileAt(p.x, p.y, isVfx); count++;
     }
+    return count;
+}
+
+function executeAbilityFinish(id, skipGlobalVFX = false) {
+    if(!skipGlobalVFX) playAbilityVFX();
+    abilityCharges[id] = 0; updateSlotsUI(); saveGameData();
+}
+
+// ---------------- UI Slots System ----------------
+function buySlot(slotIndex) {
+    let price = slotIndex === 1 ? 2000 : 20000;
+    if (totalGold >= price) { deductGold(price); unlockedSlots = slotIndex + 1; localStorage.setItem('dnd2048UnlockedSlots_vFinal', unlockedSlots); updateSlotsUI(); }
+}
+
+function equipAbility(val) {
+    let idx = equippedAbilities.indexOf(val);
+    if (idx !== -1) { equippedAbilities[idx] = null; } 
+    else {
+        let emptyIdx = equippedAbilities.indexOf(null);
+        if (emptyIdx !== -1 && emptyIdx < unlockedSlots) { equippedAbilities[emptyIdx] = val; } 
+        else {
+            let p = document.getElementById('book-tip'); p.innerText = "槽位已满，请先点击上方槽位或图鉴卸下能力！"; p.style.color = "var(--f44336)";
+            setTimeout(()=> { p.innerText = "点击卡片装备。某些组合将触发隐藏连携！"; p.style.color="var(--text-muted)";}, 2000); return;
+        }
+    }
+    localStorage.setItem('dnd2048EquippedArr_vFinal', JSON.stringify(equippedAbilities));
+    renderBestiary(); updateSlotsUI();
+}
+
+function updateSynergyUI() {
+    synergiesContainer.innerHTML = '';
+    let activeSyns = getActiveSynergies(equippedAbilities); 
+    if (activeSyns.length > 0) {
+        activeSyns.forEach(s => {
+            let el = document.createElement('div'); el.className = 'synergy-box active';
+            let t = s.type === 'replace' ? '变异' : '共鸣';
+            el.innerHTML = `<div class="synergy-header"><span>${s.name}</span><span class="synergy-tag">${t}</span></div><div class="synergy-desc">${s.desc}</div>`;
+            synergiesContainer.appendChild(el);
+        });
+    }
+}
+
+function updateSlotsUI() {
+    document.getElementById('cost-kill').innerText = `${goldCosts.kill}G`; document.getElementById('btn-g-kill').disabled = totalGold < goldCosts.kill;
+    document.getElementById('cost-rewind').innerText = `${goldCosts.rewind}G`; document.getElementById('btn-g-rewind').disabled = totalGold < goldCosts.rewind || history.length === 0;
+    document.getElementById('cost-swap').innerText = `${goldCosts.swap}G`; document.getElementById('btn-g-swap').disabled = totalGold < goldCosts.swap;
+
+    slotsContainer.innerHTML = '';
+    for(let i=0; i<3; i++) {
+        let slotEl = document.createElement('div');
+        if (i >= unlockedSlots) {
+            slotEl.className = 'slot locked'; let price = i === 1 ? '2000G' : '20000G';
+            slotEl.innerHTML = `<div class="lock-icon">🔒</div><div class="lock-price">${price}解锁</div>`; slotEl.onclick = () => buySlot(i);
+        } else {
+            let abId = currentAbilities[i]; let preId = equippedAbilities[i];
+            if (abId) {
+                slotEl.className = 'slot equipped'; let m = MONSTERS[abId]; let cd = m.ability.cd; let chg = abilityCharges[abId] || 0;
+                let btnHTML = '';
+                if (cd > 0) {
+                    if (m.ability.type === 'active') {
+                        if (chg >= cd) { let btnTxt = (isTargetingMode && targetingAbilityId == abId) ? '取消' : '释放'; btnHTML = `<button class="slot-btn ready" onclick="triggerActiveAbility(${abId})">${btnTxt}</button>`; } 
+                        else { btnHTML = `<button class="slot-btn" disabled>${chg}/${cd}</button>`; }
+                    } else { btnHTML = `<button class="slot-btn" disabled>${chg}/${cd}</button>`; }
+                } else {
+                    let replaced = isAbilityReplaced(abId);
+                    btnHTML = `<button class="slot-btn" style="border-color:${replaced?'#e040fb':'var(--gold)'}; color:${replaced?'#e040fb':'var(--gold)'};" disabled>${replaced?'变异中':'被动生效'}</button>`;
+                }
+                slotEl.innerHTML = `<div class="slot-icon">${generateSVG(abId)}</div><div class="slot-name">${m.name}</div>${btnHTML}`;
+            } else if (preId) {
+                slotEl.className = 'slot equipped'; slotEl.style.opacity = '0.6'; let m = MONSTERS[preId];
+                slotEl.innerHTML = `<div class="slot-icon">${generateSVG(preId)}</div><div class="slot-name">${m.name}</div><button class="slot-btn" disabled>下局生效</button>`;
+                slotEl.onclick = () => equipAbility(preId);
+            } else { slotEl.className = 'slot empty'; slotEl.innerHTML = `<span>槽位 ${i+1}</span>`; }
+        }
+        slotsContainer.appendChild(slotEl);
+    }
+    updateSynergyUI();
 }
 
 function renderBestiary() {
-    bestiaryGrid.innerHTML = '';
-    const sortedKeys = Object.keys(MONSTERS).map(Number).sort((a,b)=>a-b);
+    bestiaryGrid.innerHTML = ''; const sortedKeys = Object.keys(MONSTERS).map(Number).sort((a,b)=>a-b);
     sortedKeys.forEach(val => {
         let isUnlocked = unlocked.includes(val); let data = MONSTERS[val];
-        let entry = document.createElement('div');
-        let isEquipped = (val == equippedAbilityId);
+        let entry = document.createElement('div'); let isEquipped = equippedAbilities.includes(val);
         entry.className = `book-entry ${isUnlocked ? '' : 'locked'} ${isEquipped ? 'equipped' : ''}`;
-        entry.innerHTML = `
-            <div class="entry-img">${generateSVG(val)}</div>
-            <div class="entry-name">${isUnlocked ? data.name : '???'}</div>
-            ${isUnlocked && data.ability ? `<div class="entry-ability"><b>${data.ability.type=='active'?'[主动]':'[被动]'} ${data.ability.name} ${data.ability.cd>0?'(CD:'+data.ability.cd+')':''}</b><br>${data.ability.desc}</div>` : ''}
-            <div style="font-size:10px; color:#666; margin-top:auto; padding-top:5px;">LV. ${val}</div>
-        `;
+        entry.innerHTML = `<div class="entry-img">${generateSVG(val)}</div><div class="entry-name">${isUnlocked ? data.name : '???'}</div>${isUnlocked && data.ability ? `<div class="entry-ability"><b>${data.ability.type=='active'?'[主动]':'[被动]'} ${data.ability.name} ${data.ability.cd>0?'(CD:'+data.ability.cd+')':''}</b><br>${data.ability.desc}</div>` : ''}<div style="font-size:10px; color:#666; margin-top:auto; padding-top:5px;">LV. ${val}</div>`;
         if (isUnlocked) {
             entry.addEventListener('click', () => {
-                equippedAbilityId = val; localStorage.setItem('dnd2048Equipped', val);
-                renderBestiary();
+                equipAbility(val);
                 let oldText = document.querySelector('.bestiary-subtitle').innerText;
-                document.querySelector('.bestiary-subtitle').innerText = `已预设：${data.name} (将在点击“重新试炼”时生效)`;
-                document.querySelector('.bestiary-subtitle').style.color = 'var(--gold-bright)';
-                setTimeout(() => { document.querySelector('.bestiary-subtitle').innerText = '随着合成将逐步解锁新魔物。点击已解锁的卡片在下局装备'; document.querySelector('.bestiary-subtitle').style.color = 'var(--text-muted)'; }, 3000);
+                document.querySelector('.bestiary-subtitle').innerText = `已预设：${data.name} (将在点击“重新试炼”时生效)`; document.querySelector('.bestiary-subtitle').style.color = 'var(--gold-bright)';
+                setTimeout(() => { document.querySelector('.bestiary-subtitle').innerText = '点击卡片装备。某些组合将触发隐藏连携！'; document.querySelector('.bestiary-subtitle').style.color = 'var(--text-muted)'; }, 3000);
             });
         }
         bestiaryGrid.appendChild(entry);
     });
 }
 
+function abilityShuffle(isPassive = false) {
+    let coords = []; let tiles = [];
+    for(let y=0;y<SIZE;y++)for(let x=0;x<SIZE;x++) if(board[y][x]) { coords.push({x,y}); tiles.push(board[y][x]); }
+    if(tiles.length === 0) return false;
+    for (let i = tiles.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [tiles[i], tiles[j]] = [tiles[j], tiles[i]]; }
+    for(let i=0; i<coords.length; i++) {
+        let p = coords[i]; let t = tiles[i]; board[p.y][p.x] = t;
+        let tileObj = tilesMap[t.id]; 
+        if(tileObj) {
+            tileObj.x = p.x; tileObj.y = p.y;
+            tileObj.el.style.transform = `translate(${p.x * 111}%, ${p.y * 111}%)`;
+            if(!isPassive) tileObj.el.classList.add('shuffle-anim');
+        }
+    }
+    if(!isPassive) { setTimeout(() => { document.querySelectorAll('.shuffle-anim').forEach(el => el.classList.remove('shuffle-anim')); }, 500); }
+    updateFreezeUI(); return true;
+}
+
 function move(direction) {
     if (isAnimating || overlay.classList.contains('active')) return;
-    
     if (isTargetingMode) cancelTargeting();
+    ambushBonusCount = 0; 
     
     let vector = { 'up': {x:0,y:-1}, 'down': {x:0,y:1}, 'left': {x:-1,y:0}, 'right': {x:1,y:0} }[direction];
     let traX = Array.from({length: SIZE}, (_,i)=>i); let traY = Array.from({length: SIZE}, (_,i)=>i);
@@ -1071,7 +955,6 @@ function move(direction) {
             let cell = newBoard[y][x];
             if (cell) {
                 if (cell.frozen > 0) continue; 
-
                 let currX = x, currY = y; let nextX = x + vector.x, nextY = y + vector.y;
                 while (nextX>=0 && nextX<SIZE && nextY>=0 && nextY<SIZE && newBoard[nextY][nextX] === null) {
                     currX = nextX; currY = nextY; nextX += vector.x; nextY += vector.y;
@@ -1081,52 +964,59 @@ function move(direction) {
                     newBoard[nextY][nextX].val === cell.val && !mergedMap[nextY][nextX] && !(newBoard[nextY][nextX].frozen > 0)) {
                     
                     let target = newBoard[nextY][nextX]; newBoard[y][x] = null;
-                    let newVal = target.val * 2;
-                    let isCrit = false;
-                    let isFireUp = false;
-                    let baseScore = newVal;
+                    let newVal = target.val * 2; let isCrit = false; let isFireUp = false; let baseScore = newVal;
                     
-                    // 彩蛋：双提亚马特降级为洞穴鼠
+                    if (hasActiveSynergy("雷霆鼠疫") && target.val === 2) { newVal = 8; baseScore = 8; }
+                    
                     if (target.val === 2097152) {
-                        newVal = 2;
-                        baseScore = 2;
+                        newVal = 2; baseScore = 2; showFloatingVFX(nextX, nextY, "✨繁华落尽", '#9c27b0');
                     } else {
-                        let r = Math.random();
-                        if (currentAbilityId == 2048) {
-                            if (r < 0.02) { newVal *= 8; isCrit = true; } // +3
-                            else if (r < 0.07) { newVal *= 4; isCrit = true; } // +2
-                        } else if (currentAbilityId == 262144) {
-                            if (r < 0.1) { newVal *= 4; isCrit = true; deductGold(-1); showFloatingVFX(nextX, nextY, "+1 G"); }
-                        }
-                        
-                        // 被动：火元素合成燃焰之颅50%直接变火元素
-                        if (currentAbilityId == 512 && newVal === 256) {
-                            if (Math.random() < 0.5) {
-                                newVal = 512;
-                                isFireUp = true;
+                        let bonusLevels = 0;
+                        if (hasActiveSynergy("圣痕异能")) {
+                            let r = Math.random();
+                            if (r < 0.01) bonusLevels += 4; else if (r < 0.04) bonusLevels += 3; else if (r < 0.14) bonusLevels += 2;
+                            if (bonusLevels > 0) { 
+                                let critGold = hasActiveSynergy("圣堂税契") ? 2 : 1;
+                                deductGold(-critGold); showFloatingVFX(nextX, nextY, `+${critGold} G`, '#e040fb'); 
                             }
+                        } else {
+                            if (!isAbilityReplaced(262144) && hasActiveAbility(262144) && Math.random() < 0.1) { 
+                                bonusLevels += 1; 
+                                let critGold = hasActiveSynergy("圣堂税契") ? 2 : 1;
+                                deductGold(-critGold); showFloatingVFX(nextX, nextY, `+${critGold} G`); 
+                            }
+                            if (!isAbilityReplaced(2048) && hasActiveAbility(2048)) {
+                                let r = Math.random(); if (r < 0.02) bonusLevels += 2; else if (r < 0.07) bonusLevels += 1;
+                            }
+                        }
+                        if (bonusLevels > 0) { for(let i=0; i<bonusLevels; i++) newVal *= 2; isCrit = true; }
+                        
+                        if (hasActiveSynergy("爆燃核心") && newVal === 256 && guaranteedFireElemental) {
+                            newVal = 512; isFireUp = true; guaranteedFireElemental = false;
+                        } else if (!isAbilityReplaced(512) && hasActiveAbility(512) && newVal === 256 && Math.random() < 0.5) {
+                            newVal = 512; isFireUp = true;
                         }
                     }
                     
-                    // 被动积分计算（火元素被动）
                     let localScoreAdd = baseScore;
-                    if (currentAbilityId == 512) {
+                    if (!isAbilityReplaced(512) && hasActiveAbility(512)) {
                         let fireCount = board.flat().filter(c => c && c.val === 512).length;
                         if (fireCount > 0) localScoreAdd = localScoreAdd * (1 + fireCount);
                     }
                     
-                    if (currentAbilityId == 64 && newVal === 64) {
-                        ogreMergeCount++;
-                        if (ogreMergeCount >= 4) { ogreMergeCount = 0; deductGold(-1); showFloatingVFX(nextX, nextY, "+1 G"); }
+                    if (hasActiveSynergy("巨胃金库")) {
+                        if (newVal === 64) { ogreMergeCount++; if (ogreMergeCount >= 3) { ogreMergeCount = 0; deductGold(-1); showFloatingVFX(nextX, nextY, "+1 G", '#e040fb'); } }
+                        if (newVal === 8192) { deductGold(-25); showFloatingVFX(nextX, nextY, "+25 G", '#e040fb'); }
+                    } else {
+                        if (!isAbilityReplaced(64) && hasActiveAbility(64) && newVal === 64) {
+                            ogreMergeCount++; if (ogreMergeCount >= 4) { ogreMergeCount = 0; deductGold(-1); showFloatingVFX(nextX, nextY, "+1 G"); }
+                        }
+                        if (!isAbilityReplaced(8192) && hasActiveAbility(8192) && newVal === 8192) { deductGold(-20); showFloatingVFX(nextX, nextY, "+20 G"); }
                     }
-                    if (currentAbilityId == 8192 && newVal === 8192) { deductGold(-20); showFloatingVFX(nextX, nextY, "+20 G"); }
 
-                    if (newVal === 524288) {
-                        lichUsed = false; goldCosts = {kill: 2, rewind: 2, swap: 2};
-                    }
+                    if (newVal === 524288) { lichUsed = false; goldCosts = {kill: 2, rewind: 2, swap: 2}; }
 
-                    let newId = nextTileId++;
-                    newBoard[nextY][nextX] = { id: newId, val: newVal, frozen: 0 };
+                    let newId = nextTileId++; newBoard[nextY][nextX] = { id: newId, val: newVal, frozen: 0 };
                     mergedMap[nextY][nextX] = true; scoreAdd += localScoreAdd; moved = true;
 
                     moves.push({ id: cell.id, toX: nextX, toY: nextY, destroy: true });
@@ -1142,61 +1032,63 @@ function move(direction) {
 
     if (moved) {
         isAnimating = true; saveState();
-        
-        for(let y=0; y<SIZE; y++) for(let x=0; x<SIZE; x++) {
-            if(newBoard[y][x] && newBoard[y][x].frozen > 0) newBoard[y][x].frozen--;
-        }
+        for(let y=0; y<SIZE; y++) for(let x=0; x<SIZE; x++) if(newBoard[y][x] && newBoard[y][x].frozen > 0) newBoard[y][x].frozen--;
 
         board = newBoard; updateScore(scoreAdd);
-        abilityCharge++; updateAbilityUI();
         
-        // 被动：多头蛇 随机重分配 (每次移动)
-        if (currentAbilityId == 4096) abilityShuffle(true);
-        // 被动：眼魔 充能满施放
-        if (currentAbilityId == 131072 && abilityCharge >= 10) {
-            let maxVal = Math.max(...board.flat().filter(c=>c).map(c=>c.val));
-            if(abilityDestroyCond(v => v < maxVal, 1, true) > 0) abilityCharge = 0;
-        }
-
-        // 终极判定：提亚马特
-        let hasTiamat = board.flat().some(c => c && c.val === 2097152);
-        if (currentAbilityId == 2097152 && hasTiamat) {
-            for(let y=0;y<SIZE;y++) for(let x=0;x<SIZE;x++) {
-                if(!board[y][x] || board[y][x].val !== 2097152) {
-                    if (board[y][x]) removeTileDOM(board[y][x].id, true);
-                    let newId = nextTileId++; board[y][x] = {id: newId, val: 2097152, frozen: 0};
-                    createTileDOM(newId, 2097152, x, y);
-                }
-            }
-            setTimeout(() => { showMsg('🏆 神圣干涉', '恶龙神后降临，世界迎来终结与新生！\n金币已结算'); handleGameOverGold(); document.getElementById('btn-msg-action').innerText = "重获新生"; }, 500);
-            return;
-        }
-
-        moves.forEach(m => {
-            let t = tilesMap[m.id];
-            if (t) { t.x = m.toX; t.y = m.toY; t.el.style.transform = `translate(${t.x * 111}%, ${t.y * 111}%)`; if (m.destroy) t.el.style.zIndex = "5"; }
+        currentAbilities.forEach(id => {
+            let m = MONSTERS[id];
+            if (m && (m.ability.type === 'active' || id == 131072)) abilityCharges[id] = (abilityCharges[id] || 0) + 1;
         });
+        updateSlotsUI();
+
+        moves.forEach(m => { let t = tilesMap[m.id]; if (t) { t.x = m.toX; t.y = m.toY; t.el.style.transform = `translate(${t.x * 111}%, ${t.y * 111}%)`; if (m.destroy) t.el.style.zIndex = "5"; } });
 
         setTimeout(() => {
             moves.filter(m => m.destroy).forEach(m => removeTileDOM(m.id, false));
             creates.forEach(c => createTileDOM(c.id, c.val, c.x, c.y, true, c.crit, c.fireUp));
-            updateFreezeUI(); addRandomTile(); saveGameData();
-            checkGameOverAction();
-            isAnimating = false;
+            
+            // 被动技能后处理
+            if (!isAbilityReplaced(4096) && hasActiveAbility(4096)) abilityShuffle(true);
+            if (!isAbilityReplaced(131072) && hasActiveAbility(131072) && abilityCharges[131072] >= 10) {
+                let success = false; let maxVal = Math.max(...board.flat().filter(c=>c).map(c=>c.val));
+                if (hasActiveSynergy("冰晶解离")) {
+                    let fTargets = [];
+                    for(let r=0; r<SIZE; r++) for(let c=0; c<SIZE; c++) if(board[r][c] && board[r][c].frozen > 0 && board[r][c].val < maxVal) fTargets.push({x:c, y:r, id:board[r][c].id});
+                    if (fTargets.length > 0) {
+                        let t = fTargets[Math.floor(Math.random() * fTargets.length)];
+                        destroyTileAt(t.x, t.y, true); success = true; showFloatingVFX(t.x, t.y, "❄️冰晶解离", '#e040fb');
+                    }
+                }
+                if (!success) success = abilityDestroyCond(v => v < maxVal, 1, true) > 0;
+                if (success) { abilityCharges[131072] = 0; updateSlotsUI(); }
+            }
+
+            let hasTiamat = board.flat().some(c => c && c.val === 2097152);
+            if (!isAbilityReplaced(2097152) && hasActiveAbility(2097152) && hasTiamat) {
+                for(let y=0;y<SIZE;y++) for(let x=0;x<SIZE;x++) {
+                    if(!board[y][x] || board[y][x].val !== 2097152) {
+                        if (board[y][x]) removeTileDOM(board[y][x].id, true);
+                        let newId = nextTileId++; board[y][x] = {id: newId, val: 2097152, frozen: 0}; createTileDOM(newId, 2097152, x, y);
+                    }
+                }
+                setTimeout(() => { showMsg('🏆 神圣干涉', '恶龙神后降临，世界迎来终结与新生！\n金币已结算'); handleGameOverGold(); document.getElementById('btn-msg-action').innerText = "重获新生"; }, 500); return;
+            }
+
+            updateFreezeUI(); addRandomTile(); saveGameData(); checkGameOverAction(); isAnimating = false;
         }, 150);
     }
 }
 
 function handleGameOverGold() {
-    let baseGold = Math.floor(Math.sqrt(score));
-    let multi = 1;
-    if (currentAbilityId == 64) multi += 0.1;
-    if (currentAbilityId == 8192) multi += 0.25;
+    let baseGold = Math.floor(Math.sqrt(score)); let multi = 1;
+    if (hasActiveSynergy("巨胃金库")) { multi += 0.40; } 
+    else {
+        if (!isAbilityReplaced(64) && hasActiveAbility(64)) multi += 0.1;
+        if (!isAbilityReplaced(8192) && hasActiveAbility(8192)) multi += 0.25;
+    }
     let earnedGold = Math.floor(baseGold * multi);
-    
-    totalGold += earnedGold;
-    localStorage.setItem('dnd2048Gold', totalGold);
-    uiGold.innerText = totalGold;
+    totalGold += earnedGold; localStorage.setItem('dnd2048Gold_vFinal', totalGold); uiGold.innerText = totalGold;
     return earnedGold;
 }
 
@@ -1210,49 +1102,32 @@ function checkGameOverAction() {
         }
     }
     if (isOver) {
-        if (currentAbilityId == 524288 && !lichUsed) {
-            lichUsed = true;
-            let maxVal = Math.max(...board.flat().filter(c=>c).map(c=>c.val));
-            abilityDestroyCond(v => v !== maxVal, 999, true);
-            goldCosts = {kill: 2, rewind: 2, swap: 2};
-            playAbilityVFX(); updateAbilityUI(); saveGameData();
-            showMsg('命匣存储生效', '巫妖的命匣为你重塑了肉身\n全场低级魔物已献祭，金币花费重置！');
-            setTimeout(() => { overlay.classList.remove('active'); }, 2500);
-            return;
+        if (!isAbilityReplaced(524288) && hasActiveAbility(524288) && !lichUsed) {
+            lichUsed = true; let maxVal = Math.max(...board.flat().filter(c=>c).map(c=>c.val));
+            abilityDestroyCond(v => v !== maxVal, 999, true); goldCosts = {kill: 2, rewind: 2, swap: 2};
+            playAbilityVFX(); updateSlotsUI(); saveGameData(); showMsg('命匣存储生效', '巫妖的命匣为你重塑了肉身\n全场低级魔物已献祭，金币花费重置！'); setTimeout(() => { overlay.classList.remove('active'); }, 2500); return;
         }
-        let earned = handleGameOverGold();
-        showMsg('试炼结束', `你的冒险止步于此\n本次获得金币: ${earned} 🪙`);
+        let earned = handleGameOverGold(); showMsg('试炼结束', `你的冒险止步于此\n本次获得金币: ${earned} 🪙`);
     }
 }
 
 function showMsg(title, sub) {
-    msgText.innerText = title;
-    let p = document.createElement('p'); p.innerText = sub; p.style.color="#8c8279"; p.style.fontSize="16px"; p.style.marginBottom="20px"; p.style.textAlign="center"; p.style.lineHeight="1.5";
-    if(msgText.nextSibling.tagName === 'P') msgText.nextSibling.remove();
-    msgText.parentNode.insertBefore(p, msgText.nextSibling);
-    overlay.classList.add('active');
+    msgText.innerText = title; let p = document.createElement('p'); p.innerText = sub; p.style.color="#8c8279"; p.style.fontSize="16px"; p.style.marginBottom="20px"; p.style.textAlign="center"; p.style.lineHeight="1.5";
+    if(msgText.nextSibling.tagName === 'P') msgText.nextSibling.remove(); msgText.parentNode.insertBefore(p, msgText.nextSibling); overlay.classList.add('active');
 }
 
 document.addEventListener('keydown', e => {
     const key = e.key;
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) { e.preventDefault(); move(key.replace('Arrow', '').toLowerCase()); } 
-    else if (['w', 'a', 's', 'd', 'W', 'A', 'S', 'D'].includes(key)) {
-        e.preventDefault(); const wasdMap = { 'w': 'up', 'W': 'up', 's': 'down', 'S': 'down', 'a': 'left', 'A': 'left', 'd': 'right', 'D': 'right' };
-        move(wasdMap[key]);
-    }
+    else if (['w', 'a', 's', 'd', 'W', 'A', 'S', 'D'].includes(key)) { e.preventDefault(); const wasdMap = { 'w': 'up', 'W': 'up', 's': 'down', 'S': 'down', 'a': 'left', 'A': 'left', 'd': 'right', 'D': 'right' }; move(wasdMap[key]); }
 });
-
-let touchStartX = 0, touchStartY = 0;
-gameContainer.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY; }, {passive: true});
-gameContainer.addEventListener('touchmove', e => { e.preventDefault(); }, {passive: false});
-gameContainer.addEventListener('touchend', e => {
+let touchStartX = 0, touchStartY = 0; gameContainer.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY; }, {passive: true}); gameContainer.addEventListener('touchmove', e => { e.preventDefault(); }, {passive: false}); gameContainer.addEventListener('touchend', e => {
     let dx = e.changedTouches[0].clientX - touchStartX; let dy = e.changedTouches[0].clientY - touchStartY;
-    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 30) move(dx > 0 ? 'right' : 'left');
-    else if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 30) move(dy > 0 ? 'down' : 'up');
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 30) move(dx > 0 ? 'right' : 'left'); else if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 30) move(dy > 0 ? 'down' : 'up');
 });
 
-document.getElementById('btn-restart').addEventListener('click', () => { overlay.classList.remove('active'); localStorage.removeItem('dnd2048GameState'); initGame(true); });
-document.getElementById('btn-msg-action').addEventListener('click', () => { overlay.classList.remove('active'); localStorage.removeItem('dnd2048GameState'); initGame(true); });
+document.getElementById('btn-restart').addEventListener('click', () => { overlay.classList.remove('active'); localStorage.removeItem('dnd2048GameState_vFinal'); currentAbilities = [...equippedAbilities]; initGame(true); });
+document.getElementById('btn-msg-action').addEventListener('click', () => { overlay.classList.remove('active'); localStorage.removeItem('dnd2048GameState_vFinal'); currentAbilities = [...equippedAbilities]; initGame(true); });
 
 initGame();
 </script>
